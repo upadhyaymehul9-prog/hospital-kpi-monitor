@@ -12,68 +12,40 @@
   "categories": ["medical", "productivity", "utilities"],
   "icons": [
     {
-      "src": "icons/icon-72.png",
+      "src": "./icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-96.png",
+      "src": "./icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-144.png",
+      "src": "./icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/screen-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "KPI Calculator on mobile"
-    },
-    {
-      "src": "screenshots/screen-desktop.png",
-      "sizes": "1280x800",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "KPI Dashboard on desktop"
     }
   ],
   "shortcuts": [
@@ -82,21 +54,21 @@
       "short_name": "BOR",
       "description": "Calculate Bed Occupancy Rate",
       "url": "./hospital-kpi-monitor.html#bor",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "./icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "Readmission Rate",
       "short_name": "Readmit",
       "description": "Calculate 30-day Readmission Rate",
       "url": "./hospital-kpi-monitor.html#readmit",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "./icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "Patient to Nurse Ratio",
       "short_name": "P:N Ratio",
       "description": "Calculate Patient to Nurse Ratio",
       "url": "./hospital-kpi-monitor.html#nurse_ratio",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "./icon-96.png", "sizes": "96x96" }]
     }
   ],
   "prefer_related_applications": false
