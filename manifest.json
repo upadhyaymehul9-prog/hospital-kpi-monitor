@@ -1,6 +1,6 @@
 {
   "name": "Hospital KPI Monitor",
-  "short_name": "KPI Monitor",
+  "short_name": "Hospital KPI",
   "description": "Instant hospital KPI calculations. No login. No data stored. WHO-benchmarked.",
   "start_url": "./hospital-kpi-monitor.html",
   "scope": "./",
