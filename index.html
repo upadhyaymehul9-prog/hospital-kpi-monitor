@@ -2,1041 +2,737 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#050d1a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="KPI Monitor">
-<meta name="description" content="Hospital KPI Monitor — instant, offline-capable KPI calculations for healthcare professionals.">
-<title>Hospital KPI Monitor</title>
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospital KPI Monitor v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Variables ─────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:        #050d1a;
-  --bg2:       #091527;
-  --surface:   #0d1f38;
-  --surface2:  #132843;
-  --border:    #1a3050;
-  --border2:   #1e3a5f;
-  --teal:      #00e5b8;
-  --teal2:     #00c49a;
-  --blue:      #3b9eff;
-  --blue2:     #1a7ce8;
-  --amber:     #ffb547;
-  --red:       #ff5b6b;
-  --green:     #22d98f;
-  --text:      #e6f0ff;
-  --muted:     #4a6580;
-  --muted2:    #2d4a66;
-  --radius:    14px;
-  --radius-lg: 22px;
-  --mono:      'JetBrains Mono', monospace;
-  --sans:      'Syne', sans-serif;
+:root{--bg:#0a0f1a;--surface:#111827;--surface2:#1a2235;--surface3:#0d1526;--border:#1e2d45;--accent:#00d4aa;--accent2:#0099ff;--warn:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--muted:#64748b;--green:#10b981;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,170,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nav-brand{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;}
+.nav-brand span{color:var(--accent);}
+.nav-modes{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.mode-btn{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.mode-btn.active{background:var(--accent);color:#000;font-weight:700;}
+.mode-btn:not(.active):hover{color:var(--accent);}
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:block;}
+.container{max-width:920px;margin:0 auto;padding:0 20px;}
+/* QUICK */
+.quick-header{text-align:center;padding:36px 20px 28px;}
+.eyebrow{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:14px;opacity:0;animation:fadeUp .6s ease forwards;}
+.quick-header h1{font-family:'Space Mono',monospace;font-size:clamp(22px,5vw,38px);font-weight:700;letter-spacing:-1px;opacity:0;animation:fadeUp .6s ease .1s forwards;}
+.quick-header h1 span{color:var(--accent);}
+.quick-header p{margin-top:10px;color:var(--muted);font-size:14px;opacity:0;animation:fadeUp .6s ease .2s forwards;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 22px;opacity:0;animation:fadeUp .6s ease .3s forwards;}
+.tab{padding:7px 16px;border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:40px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;transition:all .2s;}
+.tab:hover{border-color:var(--accent);color:var(--accent);}
+.tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:28px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:all .22s;opacity:0;animation:fadeUp .5s ease forwards;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.kpi-card:hover,.kpi-card.active{border-color:var(--accent);background:var(--surface2);transform:translateY(-2px);}
+.kpi-card:hover::before,.kpi-card.active::before{transform:scaleX(1);}
+.kpi-icon{font-size:22px;margin-bottom:8px;}
+.kpi-name{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.5px;margin-bottom:4px;}
+.kpi-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+.kpi-new{display:inline-block;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;padding:1px 6px;border-radius:3px;text-transform:uppercase;margin-left:6px;vertical-align:middle;}
+.calc-panel{background:var(--surface);border:1px solid var(--accent);border-radius:18px;padding:24px;margin-bottom:20px;display:none;animation:slideIn .3s ease;}
+.calc-panel.visible{display:block;}
+.calc-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.calc-icon{font-size:26px;}
+.calc-title{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;}
+.calc-subtitle{font-size:12px;color:var(--muted);margin-top:2px;}
+.close-btn{margin-left:auto;background:none;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.close-btn:hover{border-color:var(--danger);color:var(--danger);}
+.inputs-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:18px;}
+.input-group label{display:block;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.input-group input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:9px;font-size:15px;font-family:'Space Mono',monospace;transition:border-color .2s;outline:none;}
+.input-group input:focus{border-color:var(--accent);}
+.input-group input::placeholder{color:var(--muted);font-size:12px;}
+.input-hint{font-size:10px;color:var(--muted);margin-top:3px;}
+.calc-btn{background:var(--accent);color:#000;border:none;padding:11px 24px;border-radius:9px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.calc-btn:hover{background:#00f0c0;transform:scale(1.02);}
+.formula-line{margin-top:14px;padding:9px 13px;background:var(--surface2);border-radius:7px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);border-left:3px solid var(--accent);}
+.result-box{margin-top:18px;padding:18px;border-radius:12px;background:var(--bg);border:1px solid var(--border);display:none;animation:fadeUp .4s ease;}
+.result-box.visible{display:block;}
+.result-value{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;line-height:1;margin-bottom:4px;}
+.result-label{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.status-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:500;margin-bottom:10px;}
+.status-bar.good{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green);}
+.status-bar.warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--warn);}
+.status-bar.bad{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--danger);}
+.status-bar.neutral{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);color:var(--accent);}
+.benchmark-text{font-size:12px;color:var(--muted);font-style:italic;}
+.gauge-wrap{margin:12px 0;}
+.gauge-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:5px;}
+.gauge-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+.badge{display:inline-block;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 7px;border-radius:4px;text-transform:uppercase;margin-left:6px;}
+/* DASHBOARD */
+.dash-wrap{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
+.dash-steps{display:flex;gap:0;margin-bottom:28px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.dash-step{flex:1;padding:10px 16px;background:var(--surface);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--muted);text-align:center;cursor:pointer;border-right:1px solid var(--border);transition:all .2s;}
+.dash-step:last-child{border-right:none;}
+.dash-step.active{background:var(--accent);color:#000;font-weight:700;}
+.dash-step.done{color:var(--accent);}
+.sub-page{display:none;}
+.sub-page.active{display:block;}
+.section-head{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:24px 0 12px;display:flex;align-items:center;gap:8px;}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border);}
+.d-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;}
+.field label{display:block;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--surface3);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;transition:border-color .2s;outline:none;}
+.field input:focus{border-color:var(--accent);background:var(--surface2);}
+.field input::placeholder{color:#2d4060;}
+.field .hint{font-size:10px;color:var(--muted);margin-top:3px;}
+.currency-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.cur-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;color:var(--muted);transition:all .2s;}
+.cur-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,170,.08);}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:9px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.8px;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;}
+.btn-accent{background:var(--accent);color:#000;}
+.btn-accent:hover{background:#00f0c0;transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:#059669;}
+.btn-row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
+.score-strip{background:linear-gradient(135deg,#0d1a2e,#0a1628);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.score-main{flex:1;min-width:160px;}
+.score-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+.score-num{font-family:'Space Mono',monospace;font-size:48px;font-weight:700;line-height:1;}
+.score-num small{font-size:18px;font-weight:400;color:var(--muted);}
+.score-meta{font-size:11px;color:var(--muted);margin-top:4px;font-family:'Space Mono',monospace;}
+.score-pills{display:flex;gap:14px;flex-wrap:wrap;}
+.score-pill{text-align:center;}
+.score-pill-val{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;}
+.score-pill-val.g{color:var(--green);}
+.score-pill-val.w{color:var(--warn);}
+.score-pill-val.b{color:var(--danger);}
+.score-pill-label{font-size:10px;color:var(--muted);margin-top:2px;}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:18px;}
+.r-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px;opacity:0;animation:fadeUp .4s ease forwards;}
+.r-card.good{border-left:3px solid var(--green);}
+.r-card.warn{border-left:3px solid var(--warn);}
+.r-card.bad{border-left:3px solid var(--danger);}
+.r-card.neutral{border-left:3px solid var(--accent);}
+.r-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.r-name{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.r-badge{font-family:'Space Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;font-weight:700;text-transform:uppercase;}
+.r-badge.good{background:rgba(16,185,129,.15);color:var(--green);}
+.r-badge.warn{background:rgba(245,158,11,.15);color:var(--warn);}
+.r-badge.bad{background:rgba(239,68,68,.15);color:var(--danger);}
+.r-badge.neutral{background:rgba(0,212,170,.1);color:var(--accent);}
+.r-val{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;line-height:1;margin-bottom:3px;}
+.r-val.good{color:var(--green);}
+.r-val.warn{color:var(--warn);}
+.r-val.bad{color:var(--danger);}
+.r-val.neutral{color:var(--accent);}
+.r-unit{font-size:12px;font-weight:400;margin-left:1px;}
+.r-formula{font-size:11px;color:var(--muted);margin-top:2px;}
+.r-gauge{height:4px;background:var(--border);border-radius:2px;margin:9px 0;overflow:hidden;}
+.r-gauge-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.34,1.56,.64,1);}
+.r-note{font-size:10px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;margin-top:4px;font-style:italic;}
+.missing-alert{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--warn);margin-bottom:14px;font-family:'Space Mono',monospace;}
+.bottom-note{text-align:center;padding:20px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;}
+@media print{
+  nav,.mode-btn,.btn-row,.no-print,.dash-steps{display:none!important;}
+  body{background:#fff!important;color:#000!important;}
+  body::before{display:none;}
+  .page{display:block!important;}
+  #pageQuick{display:none!important;}
+  .sub-page{display:block!important;}
+  #subEntry{display:none!important;}
+  .print-header{display:block!important;}
+  .score-strip{background:#f0f4f8!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #ccc!important;}
+  .r-card{break-inside:avoid;background:#fff!important;border:1px solid #ddd!important;}
+  .r-card.good{border-left:3px solid #059669!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .r-card.warn{border-left:3px solid #d97706!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .r-card.bad{border-left:3px solid #dc2626!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .r-val,.score-num{color:#000!important;}
+  .dash-wrap{padding:12px!important;}
+  .results-grid{grid-template-columns:repeat(3,1fr)!important;}
 }
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── Background atmosphere ────────────────────────────── */
-.bg-glow {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  overflow: hidden;
-}
-.bg-glow::before {
-  content: '';
-  position: absolute;
-  top: -20%; left: -10%;
-  width: 70%; height: 60%;
-  background: radial-gradient(ellipse, rgba(0,229,184,0.06) 0%, transparent 70%);
-  animation: driftA 18s ease-in-out infinite alternate;
-}
-.bg-glow::after {
-  content: '';
-  position: absolute;
-  bottom: -20%; right: -10%;
-  width: 60%; height: 60%;
-  background: radial-gradient(ellipse, rgba(59,158,255,0.05) 0%, transparent 70%);
-  animation: driftB 22s ease-in-out infinite alternate;
-}
-@keyframes driftA { from { transform: translate(0,0); } to { transform: translate(4%,6%); } }
-@keyframes driftB { from { transform: translate(0,0); } to { transform: translate(-4%,-5%); } }
-
-.dot-grid {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background-image: radial-gradient(rgba(0,229,184,0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-}
-
-/* ── Layout ───────────────────────────────────────────── */
-.app {
-  position: relative; z-index: 1;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 16px 80px;
-}
-
-/* ── Header ───────────────────────────────────────────── */
-header {
-  padding: 52px 0 36px;
-  text-align: center;
-}
-
-.header-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--teal);
-  background: rgba(0,229,184,0.07);
-  border: 1px solid rgba(0,229,184,0.18);
-  padding: 5px 14px;
-  border-radius: 40px;
-  margin-bottom: 20px;
-  animation: fadeUp 0.7s ease both;
-}
-.header-tag-dot {
-  width: 5px; height: 5px;
-  background: var(--teal);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-h1 {
-  font-family: var(--sans);
-  font-size: clamp(32px, 7vw, 58px);
-  font-weight: 800;
-  letter-spacing: -2px;
-  line-height: 1.0;
-  animation: fadeUp 0.7s ease 0.08s both;
-}
-h1 em {
-  font-style: normal;
-  background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.sub {
-  margin-top: 14px;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  animation: fadeUp 0.7s ease 0.16s both;
-}
-
-.stats-row {
-  display: flex;
-  justify-content: center;
-  gap: 28px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-  animation: fadeUp 0.7s ease 0.24s both;
-}
-.stat-item {
-  text-align: center;
-}
-.stat-num {
-  font-family: var(--mono);
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--text);
-}
-.stat-num span { color: var(--teal); }
-.stat-lbl {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-/* ── Search ───────────────────────────────────────────── */
-.search-wrap {
-  position: relative;
-  margin: 28px 0 22px;
-  animation: fadeUp 0.7s ease 0.3s both;
-}
-.search-icon {
-  position: absolute;
-  left: 16px; top: 50%; transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 14px;
-  pointer-events: none;
-}
-#searchInput {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 13px 16px 13px 42px;
-  border-radius: var(--radius);
-  font-family: var(--sans);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-#searchInput::placeholder { color: var(--muted); }
-#searchInput:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(0,229,184,0.1);
-}
-
-/* ── Tabs ─────────────────────────────────────────────── */
-.tabs {
-  display: flex;
-  gap: 7px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  animation: fadeUp 0.7s ease 0.36s both;
-}
-.tab {
-  padding: 7px 16px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--muted);
-  border-radius: 40px;
-  cursor: pointer;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  transition: all 0.18s;
-  user-select: none;
-}
-.tab:hover { border-color: var(--teal); color: var(--teal); }
-.tab.active {
-  background: var(--teal);
-  color: #000;
-  border-color: var(--teal);
-  font-weight: 500;
-}
-
-/* ── Calculator Panel ─────────────────────────────────── */
-.calc-panel {
-  background: var(--surface);
-  border: 1px solid var(--teal);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  margin-bottom: 22px;
-  display: none;
-  position: relative;
-  overflow: hidden;
-}
-.calc-panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--teal), transparent);
-}
-.calc-panel.visible {
-  display: block;
-  animation: panelIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes panelIn {
-  from { opacity: 0; transform: translateY(-8px) scale(0.99); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
-}
-
-.calc-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 22px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
-}
-.calc-icon-wrap {
-  width: 46px; height: 46px;
-  background: var(--surface2);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-}
-.calc-name {
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-.calc-desc { font-size: 12px; color: var(--muted); margin-top: 3px; }
-.cat-badge {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-.cat-badge.efficiency { background: rgba(59,158,255,0.15); color: var(--blue); }
-.cat-badge.quality    { background: rgba(34,217,143,0.15); color: var(--green); }
-.cat-badge.financial  { background: rgba(255,181,71,0.15); color: var(--amber); }
-.cat-badge.staff      { background: rgba(0,229,184,0.15); color: var(--teal); }
-
-.close-btn {
-  margin-left: auto;
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  cursor: pointer;
-  font-size: 15px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.18s;
-  flex-shrink: 0;
-}
-.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,91,107,0.08); }
-
-.inputs-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.input-group label {
-  display: block;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 7px;
-}
-.input-group input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-family: var(--mono);
-  transition: border-color 0.18s, box-shadow 0.18s;
-  outline: none;
-  -moz-appearance: textfield;
-}
-.input-group input::-webkit-outer-spin-button,
-.input-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.input-group input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(0,229,184,0.1);
-}
-.input-group input::placeholder { color: var(--muted2); font-size: 13px; }
-
-.btn-row { display: flex; gap: 10px; align-items: center; }
-
-.calc-btn {
-  background: linear-gradient(135deg, var(--teal) 0%, var(--teal2) 100%);
-  color: #000;
-  border: none;
-  padding: 12px 26px;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.18s;
-  text-transform: uppercase;
-}
-.calc-btn:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(0,229,184,0.3); }
-.calc-btn:active { transform: scale(0.98); }
-
-.reset-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.18s;
-  text-transform: uppercase;
-}
-.reset-btn:hover { border-color: var(--muted); color: var(--text); }
-
-.formula {
-  margin-top: 14px;
-  padding: 10px 14px;
-  background: rgba(0,229,184,0.04);
-  border-radius: 9px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  border-left: 3px solid rgba(0,229,184,0.4);
-  letter-spacing: 0.3px;
-}
-
-/* ── Result Box ───────────────────────────────────────── */
-.result-box {
-  margin-top: 18px;
-  padding: 20px;
-  border-radius: 14px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  display: none;
-}
-.result-box.visible {
-  display: block;
-  animation: fadeUp 0.35s ease both;
-}
-
-.result-top {
-  display: flex;
-  align-items: flex-end;
-  gap: 14px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.result-value {
-  font-family: var(--mono);
-  font-size: 52px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -2px;
-}
-.result-meta { display: flex; flex-direction: column; gap: 3px; }
-.result-kpi-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.result-kpi-id {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 1px;
-}
-
-.status-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.status-bar.good { background: rgba(34,217,143,0.1); border: 1px solid rgba(34,217,143,0.25); color: var(--green); }
-.status-bar.warn { background: rgba(255,181,71,0.1);  border: 1px solid rgba(255,181,71,0.25);  color: var(--amber); }
-.status-bar.bad  { background: rgba(255,91,107,0.1);  border: 1px solid rgba(255,91,107,0.25);  color: var(--red); }
-
-.benchmark-note { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
-
-/* Gauge */
-.gauge-wrap { margin-bottom: 4px; }
-.gauge-track {
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-.gauge-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
-  width: 0%;
-}
-.gauge-labels {
-  display: flex; justify-content: space-between;
-  font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px;
-}
-
-/* ── KPI Grid ─────────────────────────────────────────── */
-.section-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
-  animation: fadeUp 0.7s ease 0.42s both;
-}
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.kpi-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
-  position: relative;
-  overflow: hidden;
-  opacity: 0;
-  animation: fadeUp 0.5s ease forwards;
-}
-.kpi-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--teal), var(--blue));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.25s;
-}
-.kpi-card:hover { border-color: rgba(0,229,184,0.5); transform: translateY(-3px); background: var(--surface2); }
-.kpi-card:hover::after { transform: scaleX(1); }
-.kpi-card.active { border-color: var(--teal); background: var(--surface2); }
-.kpi-card.active::after { transform: scaleX(1); }
-
-.kpi-card-icon { font-size: 22px; margin-bottom: 10px; }
-.kpi-card-id {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--teal);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.kpi-card-desc { font-size: 12px; color: var(--muted); line-height: 1.45; }
-.kpi-card-cat {
-  margin-top: 10px;
-}
-
-.no-results {
-  grid-column: 1/-1;
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-  font-size: 14px;
-}
-.no-results span { font-size: 28px; display: block; margin-bottom: 10px; }
-
-/* ── Footer ───────────────────────────────────────────── */
-footer {
-  text-align: center;
-  padding: 32px 20px 0;
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1.7;
-  letter-spacing: 0.3px;
-  font-family: var(--mono);
-}
-footer a { color: var(--teal); text-decoration: none; }
-
-/* ── Animations ───────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Responsive ───────────────────────────────────────── */
-@media (max-width: 480px) {
-  header { padding: 36px 0 24px; }
-  h1 { letter-spacing: -1px; }
-  .result-value { font-size: 40px; }
-  .inputs-row { grid-template-columns: 1fr 1fr; }
-  .stats-row { gap: 18px; }
-}
+.print-header{display:none;text-align:center;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #000;}
+.print-header h2{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;color:#000;}
+.print-header p{font-size:11px;color:#555;margin-top:3px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
+<nav>
+  <div class="nav-brand">Hospital <span>KPI</span> Monitor</div>
+  <div class="nav-modes">
+    <button class="mode-btn active" onclick="switchMode('quick')">⚡ Quick Calc</button>
+    <button class="mode-btn" onclick="switchMode('dashboard')">📊 Full Dashboard</button>
+  </div>
+</nav>
 
-<div class="bg-glow"></div>
-<div class="dot-grid"></div>
-
-<div class="app">
-
-  <header>
-    <div class="header-tag"><span class="header-tag-dot"></span>Hospital Intelligence</div>
-    <h1>KPI <em>Monitor</em></h1>
-    <p class="sub">Instant calculations · No login · No data stored</p>
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="stat-num"><span>12</span></div>
-        <div class="stat-lbl">KPIs</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num"><span>4</span></div>
-        <div class="stat-lbl">Categories</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num"><span>WHO</span></div>
-        <div class="stat-lbl">Benchmarks</div>
-      </div>
+<!-- QUICK CALCULATOR -->
+<div class="page active" id="pageQuick">
+  <div class="quick-header">
+    <div class="eyebrow">■ 17 KPIs Available</div>
+    <h1>Quick <span>KPI</span> Calculator</h1>
+    <p>Pick any KPI · Enter numbers · Get instant result + benchmark</p>
+  </div>
+  <div class="container">
+    <div class="tabs" id="quickTabs">
+      <button class="tab active" onclick="filterKPIs(event,'all')">All</button>
+      <button class="tab" onclick="filterKPIs(event,'efficiency')">Efficiency</button>
+      <button class="tab" onclick="filterKPIs(event,'quality')">Quality</button>
+      <button class="tab" onclick="filterKPIs(event,'financial')">Financial</button>
+      <button class="tab" onclick="filterKPIs(event,'staff')">Staff</button>
     </div>
-  </header>
-
-  <!-- Search -->
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="search" id="searchInput" placeholder="Search KPIs…" oninput="handleSearch(this.value)">
+    <div class="calc-panel" id="calcPanel"></div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="bottom-note">No data stored · All calculations run locally · No login required</div>
   </div>
-
-  <!-- Tabs -->
-  <div class="tabs" id="tabBar">
-    <button class="tab active" data-cat="all"        onclick="filterKPIs('all',this)">All KPIs</button>
-    <button class="tab"        data-cat="efficiency" onclick="filterKPIs('efficiency',this)">Efficiency</button>
-    <button class="tab"        data-cat="quality"    onclick="filterKPIs('quality',this)">Quality</button>
-    <button class="tab"        data-cat="financial"  onclick="filterKPIs('financial',this)">Financial</button>
-    <button class="tab"        data-cat="staff"      onclick="filterKPIs('staff',this)">Staff</button>
-  </div>
-
-  <!-- Calculator Panel -->
-  <div class="calc-panel" id="calcPanel"></div>
-
-  <!-- KPI Cards -->
-  <div class="section-label" id="sectionLabel">Select a KPI to calculate</div>
-  <div class="kpi-grid" id="kpiGrid"></div>
-
 </div>
 
-<footer>
-  All calculations run locally in your browser — no data is ever sent or stored.<br>
-  Benchmarks sourced from WHO, NHS & international healthcare standards.<br>
-  <a href="https://github.com" target="_blank" rel="noopener">GitHub</a> · v1.0.0
-</footer>
+<!-- FULL DASHBOARD -->
+<div class="page" id="pageDash">
+  <div class="dash-wrap">
+    <div class="dash-steps no-print">
+      <div class="dash-step active" id="dStep1" onclick="goSub(1)">① Enter Hospital Data</div>
+      <div class="dash-step" id="dStep2" onclick="goSub(2)">② KPI Results + PDF</div>
+    </div>
+
+    <!-- DATA ENTRY -->
+    <div class="sub-page active" id="subEntry">
+
+      <div class="section-head">🏥 Hospital Information</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field" style="grid-column:1/-1"><label>Hospital / Facility Name</label><input type="text" id="hospName" placeholder="e.g. General Hospital Kuala Lumpur"></div>
+          <div class="field"><label>From Date</label><input type="date" id="dateFrom"></div>
+          <div class="field"><label>To Date</label><input type="date" id="dateTo"></div>
+          <div class="field"><label>Department / Ward</label><input type="text" id="dept" placeholder="e.g. All Departments"></div>
+          <div class="field"><label>Prepared By</label><input type="text" id="prepBy" placeholder="e.g. Quality Unit"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🛏️ Bed & Inpatient</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>Total Available Beds</label><input type="number" id="totalBeds" placeholder="e.g. 200" min="0"></div>
+          <div class="field"><label>Occupied Beds (avg)</label><input type="number" id="occupiedBeds" placeholder="e.g. 165" min="0"></div>
+          <div class="field"><label>Total Admissions</label><input type="number" id="totalAdmissions" placeholder="e.g. 850" min="0"></div>
+          <div class="field"><label>Total Discharges</label><input type="number" id="totalDischarges" placeholder="e.g. 820" min="0"></div>
+          <div class="field"><label>Total Inpatient Days</label><input type="number" id="totalInpatientDays" placeholder="e.g. 4200" min="0"><div class="hint">Sum of all bed-days used</div></div>
+          <div class="field"><label>In-Hospital Deaths</label><input type="number" id="totalDeaths" placeholder="e.g. 8" min="0"></div>
+          <div class="field"><label>30-Day Readmissions</label><input type="number" id="readmissions" placeholder="e.g. 24" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🏃 Outpatient (OPD)</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>Total OPD Visits</label><input type="number" id="opdVisits" placeholder="e.g. 3500" min="0"></div>
+          <div class="field"><label>Total OPD Wait Time (min)</label><input type="number" id="opdTotalWait" placeholder="e.g. 87500" min="0"><div class="hint">Sum of all wait times</div></div>
+          <div class="field"><label>OPD Patients Seen on Time</label><input type="number" id="opdOnTime" placeholder="e.g. 2900" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🔪 Surgery</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>Scheduled Surgeries</label><input type="number" id="surgScheduled" placeholder="e.g. 300" min="0"></div>
+          <div class="field"><label>Cancelled Surgeries</label><input type="number" id="surgCancelled" placeholder="e.g. 18" min="0"></div>
+          <div class="field"><label>Completed Surgeries</label><input type="number" id="surgCompleted" placeholder="e.g. 282" min="0"></div>
+          <div class="field"><label>Surgical Complications</label><input type="number" id="surgComplications" placeholder="e.g. 5" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🦠 Infection & Safety</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>HAI Cases</label><input type="number" id="haiCases" placeholder="e.g. 6" min="0"></div>
+          <div class="field"><label>Pressure Ulcer Cases</label><input type="number" id="pressureUlcers" placeholder="e.g. 3" min="0"></div>
+          <div class="field"><label>Patient Falls</label><input type="number" id="patientFalls" placeholder="e.g. 4" min="0"></div>
+          <div class="field"><label>Medication Errors</label><input type="number" id="medErrors" placeholder="e.g. 2" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">👩‍⚕️ Staffing</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>Nurses (avg on shift)</label><input type="number" id="totalNurses" placeholder="e.g. 40" min="0"></div>
+          <div class="field"><label>Doctors (avg on duty)</label><input type="number" id="totalDoctors" placeholder="e.g. 15" min="0"></div>
+          <div class="field"><label>Staff Days Lost (absent)</label><input type="number" id="staffAbsent" placeholder="e.g. 35" min="0"></div>
+          <div class="field"><label>Scheduled Staff Days</label><input type="number" id="staffScheduled" placeholder="e.g. 1200" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🧪 Lab & Diagnostics</div>
+      <div class="d-card">
+        <div class="form-grid">
+          <div class="field"><label>Total Lab Tests</label><input type="number" id="labTotal" placeholder="e.g. 2000" min="0"></div>
+          <div class="field"><label>Results TAT &lt; 1hr</label><input type="number" id="labOnTime" placeholder="e.g. 1700" min="0"></div>
+          <div class="field"><label>Critical Results Total</label><input type="number" id="criticalLabTotal" placeholder="e.g. 47" min="0"></div>
+          <div class="field"><label>Critical Results Notified</label><input type="number" id="criticalLabNotified" placeholder="e.g. 45" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">💰 Financial & Revenue</div>
+      <div class="d-card">
+        <div class="currency-row">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);">CURRENCY:</span>
+          <button class="cur-btn active" onclick="setCur('MYR','RM',this)">MYR</button>
+          <button class="cur-btn" onclick="setCur('USD','$',this)">USD</button>
+          <button class="cur-btn" onclick="setCur('IDR','Rp',this)">IDR</button>
+          <button class="cur-btn" onclick="setCur('THB','฿',this)">THB</button>
+          <button class="cur-btn" onclick="setCur('SGD','S$',this)">SGD</button>
+          <button class="cur-btn" onclick="setCur('INR','₹',this)">INR</button>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Total Revenue</label><input type="number" id="totalRevenue" placeholder="e.g. 2800000" min="0"></div>
+          <div class="field"><label>Total Operating Cost</label><input type="number" id="totalCost" placeholder="e.g. 2500000" min="0"></div>
+          <div class="field"><label>EBITDA</label><input type="number" id="ebitda" placeholder="e.g. 420000" min="0"><div class="hint">Earnings before interest, tax, depreciation, amortisation</div></div>
+          <div class="field"><label>Drug / Pharmacy Cost</label><input type="number" id="drugCost" placeholder="e.g. 320000" min="0"></div>
+          <div class="field"><label>Claims Submitted</label><input type="number" id="claimsTotal" placeholder="e.g. 400" min="0"></div>
+          <div class="field"><label>Claims Rejected</label><input type="number" id="claimsRejected" placeholder="e.g. 28" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">📊 Revenue Mix (optional)</div>
+      <div class="d-card">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-family:'Space Mono',monospace;">Enter revenue by payer type to calculate Revenue Mix Ratio</div>
+        <div class="form-grid">
+          <div class="field"><label>Private / Self-Pay Revenue</label><input type="number" id="revPrivate" placeholder="e.g. 1200000" min="0"></div>
+          <div class="field"><label>Government Scheme Revenue</label><input type="number" id="revScheme" placeholder="e.g. 800000" min="0"></div>
+          <div class="field"><label>Insurance Revenue</label><input type="number" id="revInsurance" placeholder="e.g. 800000" min="0"></div>
+        </div>
+      </div>
+
+      <div class="section-head">🏢 Department Contribution (optional)</div>
+      <div class="d-card">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-family:'Space Mono',monospace;">Enter up to 4 departments for contribution margin analysis</div>
+        <div class="form-grid">
+          <div class="field"><label>Dept 1 Name</label><input type="text" id="dept1Name" placeholder="e.g. Surgery"></div>
+          <div class="field"><label>Dept 1 Revenue</label><input type="number" id="dept1Rev" placeholder="e.g. 900000" min="0"></div>
+          <div class="field"><label>Dept 1 Direct Cost</label><input type="number" id="dept1Cost" placeholder="e.g. 600000" min="0"></div>
+          <div class="field"><label>Dept 2 Name</label><input type="text" id="dept2Name" placeholder="e.g. Medical Ward"></div>
+          <div class="field"><label>Dept 2 Revenue</label><input type="number" id="dept2Rev" placeholder="e.g. 700000" min="0"></div>
+          <div class="field"><label>Dept 2 Direct Cost</label><input type="number" id="dept2Cost" placeholder="e.g. 520000" min="0"></div>
+          <div class="field"><label>Dept 3 Name</label><input type="text" id="dept3Name" placeholder="e.g. OPD"></div>
+          <div class="field"><label>Dept 3 Revenue</label><input type="number" id="dept3Rev" placeholder="e.g. 400000" min="0"></div>
+          <div class="field"><label>Dept 3 Direct Cost</label><input type="number" id="dept3Cost" placeholder="e.g. 280000" min="0"></div>
+          <div class="field"><label>Dept 4 Name</label><input type="text" id="dept4Name" placeholder="e.g. ICU"></div>
+          <div class="field"><label>Dept 4 Revenue</label><input type="number" id="dept4Rev" placeholder="e.g. 300000" min="0"></div>
+          <div class="field"><label>Dept 4 Direct Cost</label><input type="number" id="dept4Cost" placeholder="e.g. 240000" min="0"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-accent" onclick="calcDash()">⚡ Auto-Calculate All KPIs →</button>
+        <button class="btn btn-outline" onclick="clearDash()">↺ Clear All</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="sub-page" id="subResults">
+      <div class="print-header" id="printHeader"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:18px;" class="no-print">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:18px;font-weight:700;" id="rTitle"></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;" id="rSub"></div>
+        </div>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-outline" onclick="goSub(1)">← Edit Data</button>
+          <button class="btn btn-green" onclick="window.print()">🖨 Print / PDF</button>
+        </div>
+      </div>
+      <div class="score-strip" id="scoreStrip"></div>
+      <div id="missingNote"></div>
+      <div id="catEfficiency"></div>
+      <div id="catQuality"></div>
+      <div id="catStaff"></div>
+      <div id="catLab"></div>
+      <div id="catFinancial"></div>
+      <div id="catRevenue"></div>
+      <div class="btn-row no-print" style="margin-top:8px">
+        <button class="btn btn-outline" onclick="goSub(1)">← Edit Data</button>
+        <button class="btn btn-green" onclick="window.print()">🖨 Print / PDF</button>
+      </div>
+      <div style="margin-top:18px;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;text-align:center;">No data stored or transmitted · All calculations run locally in your browser</div>
+    </div>
+  </div>
+</div>
 
 <script>
-/* ── KPI Data ─────────────────────────────────────────── */
-const KPIs = [
-  {
-    id:'bor', category:'efficiency', icon:'🛏️',
-    name:'Bed Occupancy Rate', shortName:'BOR',
-    desc:'Percentage of available beds occupied at a given time.',
-    formula:'BOR = (Occupied Beds ÷ Total Available Beds) × 100',
-    inputs:[
-      {id:'occupied', label:'Occupied Beds', placeholder:'e.g. 85'},
-      {id:'total',    label:'Total Available Beds', placeholder:'e.g. 100'}
-    ],
-    unit:'%', decimals:1,
-    calculate: v => (v.occupied / v.total) * 100,
-    benchmarks:[
-      {max:60,  status:'warn', label:'⚠ Below Target',       note:'Low occupancy may indicate resource underutilisation.'},
-      {max:90,  status:'good', label:'✓ Optimal Range',       note:'WHO recommends 80–85% for efficient bed utilisation.'},
-      {max:999, status:'bad',  label:'✕ Overcrowded',         note:'Above 90% risks patient safety and staff burnout.'}
-    ], gaugeMax:120
-  },
-  {
-    id:'alos', category:'efficiency', icon:'📅',
-    name:'Average Length of Stay', shortName:'ALOS',
-    desc:'Average number of days a patient occupies a hospital bed.',
-    formula:'ALOS = Total Inpatient Days ÷ Total Discharges',
-    inputs:[
-      {id:'days',       label:'Total Inpatient Days', placeholder:'e.g. 1200'},
-      {id:'discharges', label:'Total Discharges',     placeholder:'e.g. 300'}
-    ],
-    unit:' days', decimals:1,
-    calculate: v => v.days / v.discharges,
-    benchmarks:[
-      {max:3,   status:'good', label:'✓ Excellent Efficiency', note:'Short stays indicate efficient care pathways.'},
-      {max:7,   status:'warn', label:'⚠ Monitor Closely',      note:'Global avg is 4–6 days. Review care protocols.'},
-      {max:999, status:'bad',  label:'✕ Extended Stays',        note:'High ALOS increases costs and infection risk.'}
-    ], gaugeMax:15
-  },
-  {
-    id:'btr', category:'efficiency', icon:'🔄',
-    name:'Bed Turnover Rate', shortName:'BTR',
-    desc:'Number of patients served per available bed in a period.',
-    formula:'BTR = Total Discharges ÷ Total Available Beds',
-    inputs:[
-      {id:'discharges', label:'Total Discharges',      placeholder:'e.g. 500'},
-      {id:'beds',       label:'Total Available Beds',  placeholder:'e.g. 100'}
-    ],
-    unit:' pts/bed', decimals:1,
-    calculate: v => v.discharges / v.beds,
-    benchmarks:[
-      {max:20,  status:'warn', label:'⚠ Low Turnover',    note:'Under 30 may indicate long stays or low demand.'},
-      {max:50,  status:'good', label:'✓ Healthy Turnover', note:'Target: 30–50 patients per bed per year.'},
-      {max:999, status:'bad',  label:'✕ Overcapacity',     note:'Very high turnover may indicate insufficient beds.'}
-    ], gaugeMax:60
-  },
-  {
-    id:'opd_wait', category:'efficiency', icon:'⏱️',
-    name:'OPD Average Wait Time', shortName:'OPD Wait',
-    desc:'Average patient waiting time in the outpatient department.',
-    formula:'Avg Wait = Total Wait Time (min) ÷ Total OPD Patients',
-    inputs:[
-      {id:'total_wait', label:'Total Wait Time (min)', placeholder:'e.g. 1500'},
-      {id:'patients',   label:'Total OPD Patients',    placeholder:'e.g. 100'}
-    ],
-    unit:' min', decimals:0,
-    calculate: v => v.total_wait / v.patients,
-    benchmarks:[
-      {max:30,   status:'good', label:'✓ Good Experience',  note:'Under 30 min is the benchmark for outpatient care.'},
-      {max:60,   status:'warn', label:'⚠ Needs Improvement', note:'Review scheduling and triage workflows.'},
-      {max:9999, status:'bad',  label:'✕ Poor Experience',   note:'Over 60 min significantly impacts patient satisfaction.'}
-    ], gaugeMax:90
-  },
-  {
-    id:'surgery_cancel', category:'efficiency', icon:'🔪',
-    name:'Surgery Cancellation Rate', shortName:'Surg Cancel',
-    desc:'Percentage of scheduled surgeries cancelled on the day.',
-    formula:'Rate = (Cancelled Surgeries ÷ Scheduled Surgeries) × 100',
-    inputs:[
-      {id:'cancelled',  label:'Cancelled Surgeries',  placeholder:'e.g. 5'},
-      {id:'scheduled',  label:'Scheduled Surgeries',  placeholder:'e.g. 100'}
-    ],
-    unit:'%', decimals:1,
-    calculate: v => (v.cancelled / v.scheduled) * 100,
-    benchmarks:[
-      {max:5,   status:'good', label:'✓ Within Target',       note:'Under 5% meets the NHS benchmark for elective surgery.'},
-      {max:10,  status:'warn', label:'⚠ Above Target',         note:'Review pre-operative assessment process.'},
-      {max:200, status:'bad',  label:'✕ High Cancellation Rate', note:'Investigate systemic causes and patient prep protocols.'}
-    ], gaugeMax:20
-  },
-  {
-    id:'readmit', category:'quality', icon:'🔁',
-    name:'Readmission Rate', shortName:'Readmit',
-    desc:'Unplanned 30-day readmissions as a % of total discharges.',
-    formula:'Rate = (30-day Readmissions ÷ Total Discharges) × 100',
-    inputs:[
-      {id:'readmissions', label:'30-Day Readmissions', placeholder:'e.g. 15'},
-      {id:'discharges',   label:'Total Discharges',    placeholder:'e.g. 300'}
-    ],
-    unit:'%', decimals:1,
-    calculate: v => (v.readmissions / v.discharges) * 100,
-    benchmarks:[
-      {max:5,   status:'good', label:'✓ Excellent Quality', note:'Low readmissions indicate good discharge planning.'},
-      {max:12,  status:'warn', label:'⚠ Review Needed',     note:'Review discharge protocols and follow-up care.'},
-      {max:200, status:'bad',  label:'✕ High Readmissions',  note:'Urgent review of care quality and discharge processes.'}
-    ], gaugeMax:25
-  },
-  {
-    id:'mortality', category:'quality', icon:'📊',
-    name:'Gross Mortality Rate', shortName:'Mortality',
-    desc:'In-hospital deaths as a percentage of total admissions.',
-    formula:'Rate = (Total Deaths ÷ Total Admissions) × 100',
-    inputs:[
-      {id:'deaths',     label:'Total Deaths',     placeholder:'e.g. 10'},
-      {id:'admissions', label:'Total Admissions', placeholder:'e.g. 500'}
-    ],
-    unit:'%', decimals:2,
-    calculate: v => (v.deaths / v.admissions) * 100,
-    benchmarks:[
-      {max:1,   status:'good', label:'✓ Within Acceptable Range', note:'Below 1% is the international benchmark for general hospitals.'},
-      {max:3,   status:'warn', label:'⚠ Above Average',           note:'Review case mix and high-risk pathways.'},
-      {max:200, status:'bad',  label:'✕ High Mortality',           note:'Immediate clinical governance review recommended.'}
-    ], gaugeMax:6
-  },
-  {
-    id:'infection', category:'quality', icon:'🦠',
-    name:'Hospital Infection Rate', shortName:'HAI Rate',
-    desc:'Healthcare-associated infections per 100 patients admitted.',
-    formula:'HAI Rate = (Infections ÷ Total Admissions) × 100',
-    inputs:[
-      {id:'infections', label:'HAI Cases',         placeholder:'e.g. 5'},
-      {id:'admissions', label:'Total Admissions',  placeholder:'e.g. 500'}
-    ],
-    unit:'%', decimals:2,
-    calculate: v => (v.infections / v.admissions) * 100,
-    benchmarks:[
-      {max:1,   status:'good', label:'✓ Well Controlled',      note:'Target: below 1% with strict infection control.'},
-      {max:3,   status:'warn', label:'⚠ Monitor Closely',       note:'Review hand hygiene and sterilisation compliance.'},
-      {max:200, status:'bad',  label:'✕ Critical — Act Now',    note:'Immediate infection control audit needed.'}
-    ], gaugeMax:6
-  },
-  {
-    id:'nurse_ratio', category:'staff', icon:'👩‍⚕️',
-    name:'Patient to Nurse Ratio', shortName:'P:N Ratio',
-    desc:'Number of inpatients per nurse on a single shift.',
-    formula:'Ratio = Total Inpatients ÷ Total Nurses on Shift',
-    inputs:[
-      {id:'patients', label:'Total Inpatients',     placeholder:'e.g. 80'},
-      {id:'nurses',   label:'Nurses on Shift',       placeholder:'e.g. 20'}
-    ],
-    unit:':1', decimals:1,
-    calculate: v => v.patients / v.nurses,
-    benchmarks:[
-      {max:4,   status:'good', label:'✓ Excellent Staffing', note:'Ideal: 1:3–4 for general wards.'},
-      {max:6,   status:'warn', label:'⚠ High Workload',       note:'ICU requires 1:1–2; general ward max 1:6.'},
-      {max:999, status:'bad',  label:'✕ Understaffed',         note:'High ratios increase risk of adverse events.'}
-    ], gaugeMax:10
-  },
-  {
-    id:'doctor_ratio', category:'staff', icon:'🩺',
-    name:'Doctor to Patient Ratio', shortName:'D:P Ratio',
-    desc:'Number of patients per doctor currently on duty.',
-    formula:'Ratio = Total Patients ÷ Total Doctors on Duty',
-    inputs:[
-      {id:'patients', label:'Total Patients',       placeholder:'e.g. 100'},
-      {id:'doctors',  label:'Doctors on Duty',       placeholder:'e.g. 10'}
-    ],
-    unit:' pts/doctor', decimals:1,
-    calculate: v => v.patients / v.doctors,
-    benchmarks:[
-      {max:10,  status:'good', label:'✓ Good Coverage',          note:'WHO recommends 1 doctor per 1,000 population.'},
-      {max:20,  status:'warn', label:'⚠ High Workload',           note:'Review scheduling and consider additional coverage.'},
-      {max:999, status:'bad',  label:'✕ Critically Understaffed', note:'Risk of care quality degradation.'}
-    ], gaugeMax:30
-  },
-  {
-    id:'cost_per_day', category:'financial', icon:'💰',
-    name:'Cost Per Patient Day', shortName:'Cost/Day',
-    desc:'Average operating cost incurred per inpatient day.',
-    formula:'Cost/Day = Total Operating Cost ÷ Total Inpatient Days',
-    inputs:[
-      {id:'cost', label:'Total Operating Cost', placeholder:'e.g. 500000'},
-      {id:'days', label:'Total Inpatient Days',  placeholder:'e.g. 1000'}
-    ],
-    unit:'', decimals:2, prefix:'',
-    calculate: v => v.cost / v.days,
-    benchmarks:[
-      {max:Infinity, status:'good', label:'✓ Calculated', note:"Compare with your hospital's budget targets and prior periods."}
-    ], gaugeMax:null
-  },
-  {
-    id:'claim_reject', category:'financial', icon:'📋',
-    name:'Claim Rejection Rate', shortName:'Claim Reject',
-    desc:'Percentage of insurance claims rejected by payers.',
-    formula:'Rate = (Rejected Claims ÷ Total Claims) × 100',
-    inputs:[
-      {id:'rejected', label:'Rejected Claims',       placeholder:'e.g. 20'},
-      {id:'total',    label:'Total Claims Submitted', placeholder:'e.g. 200'}
-    ],
-    unit:'%', decimals:1,
-    calculate: v => (v.rejected / v.total) * 100,
-    benchmarks:[
-      {max:5,   status:'good', label:'✓ Low Rejection Rate',   note:'Below 5% indicates good billing accuracy.'},
-      {max:15,  status:'warn', label:'⚠ Review Billing Process', note:'Audit common rejection reasons and retrain billing staff.'},
-      {max:200, status:'bad',  label:'✕ High Rejection Rate',   note:'Significant revenue leakage — immediate billing audit needed.'}
-    ], gaugeMax:30
-  }
+// ── MODE SWITCH ──
+function switchMode(m){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(m==='quick'?'pageQuick':'pageDash').classList.add('active');
+  document.querySelectorAll('.mode-btn')[m==='quick'?0:1].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── QUICK CALC — 17 KPIs ──
+const KPIs=[
+  // Original 12
+  {id:'bor',category:'efficiency',icon:'🛏️',name:'Bed Occupancy Rate',shortName:'BOR',desc:'% of available beds occupied at a given time',formula:'(Occupied Beds ÷ Total Beds) × 100',inputs:[{id:'occupied',label:'Occupied Beds',placeholder:'e.g. 85'},{id:'total',label:'Total Available Beds',placeholder:'e.g. 100'}],unit:'%',calculate:v=>(v.occupied/v.total)*100,benchmarks:[{max:60,status:'warn',label:'⚠ Below target',note:'Low occupancy — review capacity planning.'},{max:90,status:'good',label:'✓ Optimal range',note:'WHO recommends 80–85% BOR.'},{max:999,status:'bad',label:'✕ Overcrowded',note:'Above 90% risks safety & burnout.'}],gaugeMax:120},
+  {id:'alos',category:'efficiency',icon:'📅',name:'Avg Length of Stay',shortName:'ALOS',desc:'Average days a patient occupies a hospital bed',formula:'Total Inpatient Days ÷ Total Discharges',inputs:[{id:'days',label:'Total Inpatient Days',placeholder:'e.g. 1200'},{id:'discharges',label:'Total Discharges',placeholder:'e.g. 300'}],unit:' days',calculate:v=>v.days/v.discharges,benchmarks:[{max:4,status:'good',label:'✓ Excellent',note:'Short stays = efficient care pathways.'},{max:7,status:'warn',label:'⚠ Review needed',note:'Global avg is 4–6 days.'},{max:999,status:'bad',label:'✕ Extended stays',note:'Long ALOS raises costs and infection risk.'}],gaugeMax:15,decimals:1},
+  {id:'btr',category:'efficiency',icon:'🔄',name:'Bed Turnover Rate',shortName:'BTR',desc:'Patients served per available bed in a period',formula:'Total Discharges ÷ Total Available Beds',inputs:[{id:'discharges',label:'Total Discharges',placeholder:'e.g. 500'},{id:'beds',label:'Total Available Beds',placeholder:'e.g. 100'}],unit:' pts/bed',calculate:v=>v.discharges/v.beds,benchmarks:[{max:20,status:'warn',label:'⚠ Low turnover',note:'Under 30 suggests long stays or low demand.'},{max:50,status:'good',label:'✓ Healthy',note:'Target 30–50 per bed.'},{max:999,status:'bad',label:'✕ Overcapacity',note:'Insufficient beds for demand.'}],gaugeMax:60,decimals:1},
+  {id:'readmit',category:'quality',icon:'🔁',name:'30-Day Readmission Rate',shortName:'Readmit',desc:'Unplanned 30-day readmissions as % of discharges',formula:'(Readmissions ÷ Total Discharges) × 100',inputs:[{id:'readmissions',label:'Readmissions (30-day)',placeholder:'e.g. 15'},{id:'discharges',label:'Total Discharges',placeholder:'e.g. 300'}],unit:'%',calculate:v=>(v.readmissions/v.discharges)*100,benchmarks:[{max:5,status:'good',label:'✓ Excellent quality',note:'Good discharge planning & follow-up.'},{max:12,status:'warn',label:'⚠ Review needed',note:'Audit discharge protocols.'},{max:200,status:'bad',label:'✕ High readmissions',note:'Urgent review of care quality.'}],gaugeMax:25,decimals:1},
+  {id:'mortality',category:'quality',icon:'📊',name:'Gross Mortality Rate',shortName:'Mortality',desc:'In-hospital deaths as % of total admissions',formula:'(Total Deaths ÷ Total Admissions) × 100',inputs:[{id:'deaths',label:'Total Deaths',placeholder:'e.g. 10'},{id:'admissions',label:'Total Admissions',placeholder:'e.g. 500'}],unit:'%',calculate:v=>(v.deaths/v.admissions)*100,benchmarks:[{max:1,status:'good',label:'✓ Within range',note:'Below 1% is the international benchmark.'},{max:3,status:'warn',label:'⚠ Above average',note:'Review case mix & high-risk pathways.'},{max:200,status:'bad',label:'✕ High mortality',note:'Immediate governance review required.'}],gaugeMax:6,decimals:2},
+  {id:'infection',category:'quality',icon:'🦠',name:'HAI Rate',shortName:'HAI Rate',desc:'Healthcare-associated infections per 100 patients',formula:'(HAI Cases ÷ Total Admissions) × 100',inputs:[{id:'infections',label:'HAI Cases',placeholder:'e.g. 5'},{id:'admissions',label:'Total Admissions',placeholder:'e.g. 500'}],unit:'%',calculate:v=>(v.infections/v.admissions)*100,benchmarks:[{max:1,status:'good',label:'✓ Well controlled',note:'Strict infection control in place.'},{max:3,status:'warn',label:'⚠ Monitor closely',note:'Review hand hygiene compliance.'},{max:200,status:'bad',label:'✕ Critical',note:'Immediate audit required.'}],gaugeMax:6,decimals:2},
+  {id:'opd_wait',category:'efficiency',icon:'⏱️',name:'OPD Avg Wait Time',shortName:'OPD Wait',desc:'Average patient wait time in outpatient dept',formula:'Total Wait Time (min) ÷ Total OPD Patients',inputs:[{id:'total_wait',label:'Total Wait Time (min)',placeholder:'e.g. 1500'},{id:'patients',label:'Total OPD Patients',placeholder:'e.g. 100'}],unit:' min',calculate:v=>v.total_wait/v.patients,benchmarks:[{max:30,status:'good',label:'✓ Good experience',note:'Under 30 min is the benchmark.'},{max:60,status:'warn',label:'⚠ Needs improvement',note:'Review scheduling & triage.'},{max:9999,status:'bad',label:'✕ Poor experience',note:'Over 60 min impacts satisfaction.'}],gaugeMax:90,decimals:0},
+  {id:'nurse_ratio',category:'staff',icon:'👩‍⚕️',name:'Patient to Nurse Ratio',shortName:'P:N Ratio',desc:'Number of patients assigned per nurse',formula:'Total Inpatients ÷ Total Nurses on Shift',inputs:[{id:'patients',label:'Total Inpatients',placeholder:'e.g. 80'},{id:'nurses',label:'Nurses on Shift',placeholder:'e.g. 20'}],unit:':1',calculate:v=>v.patients/v.nurses,benchmarks:[{max:4,status:'good',label:'✓ Excellent staffing',note:'Ideal 1:3–4 for general wards.'},{max:6,status:'warn',label:'⚠ Monitor workload',note:'ICU 1:1–2; general max 1:6.'},{max:999,status:'bad',label:'✕ Understaffed',note:'High ratio increases adverse events.'}],gaugeMax:10,decimals:1},
+  {id:'doctor_ratio',category:'staff',icon:'🩺',name:'Doctor to Patient Ratio',shortName:'D:P Ratio',desc:'Number of patients per doctor on duty',formula:'Total Patients ÷ Total Doctors on Duty',inputs:[{id:'patients',label:'Total Patients',placeholder:'e.g. 100'},{id:'doctors',label:'Doctors on Duty',placeholder:'e.g. 10'}],unit:' pts/doc',calculate:v=>v.patients/v.doctors,benchmarks:[{max:10,status:'good',label:'✓ Good coverage',note:'Adequate physician coverage.'},{max:20,status:'warn',label:'⚠ High workload',note:'Review scheduling.'},{max:999,status:'bad',label:'✕ Critically low',note:'Care quality at risk.'}],gaugeMax:30,decimals:1},
+  {id:'cost_per_day',category:'financial',icon:'💰',name:'Cost Per Patient Day',shortName:'Cost/Day',desc:'Average operating cost per inpatient day',formula:'Total Operating Cost ÷ Total Inpatient Days',inputs:[{id:'cost',label:'Total Operating Cost',placeholder:'e.g. 500000'},{id:'days',label:'Total Inpatient Days',placeholder:'e.g. 1000'}],unit:'',prefix:'',calculate:v=>v.cost/v.days,benchmarks:[{max:999999999,status:'neutral',label:'✓ Calculated',note:'Compare vs budget targets & previous periods.'}],gaugeMax:null,decimals:2},
+  {id:'claim_reject',category:'financial',icon:'📋',name:'Claim Rejection Rate',shortName:'Claim Reject',desc:'Percentage of insurance claims rejected',formula:'(Rejected Claims ÷ Total Claims) × 100',inputs:[{id:'rejected',label:'Rejected Claims',placeholder:'e.g. 20'},{id:'total',label:'Total Claims Submitted',placeholder:'e.g. 200'}],unit:'%',calculate:v=>(v.rejected/v.total)*100,benchmarks:[{max:5,status:'good',label:'✓ Low rejection',note:'Below 5% = good billing accuracy.'},{max:15,status:'warn',label:'⚠ Review billing',note:'Audit rejection reasons.'},{max:200,status:'bad',label:'✕ High rejection',note:'Revenue leakage — audit now.'}],gaugeMax:30,decimals:1},
+  {id:'surgery_cancel',category:'efficiency',icon:'🔪',name:'Surgery Cancellation Rate',shortName:'Surg Cancel',desc:'Scheduled surgeries cancelled on the day',formula:'(Cancelled ÷ Scheduled Surgeries) × 100',inputs:[{id:'cancelled',label:'Cancelled Surgeries',placeholder:'e.g. 5'},{id:'scheduled',label:'Scheduled Surgeries',placeholder:'e.g. 100'}],unit:'%',calculate:v=>(v.cancelled/v.scheduled)*100,benchmarks:[{max:5,status:'good',label:'✓ Within target',note:'Under 5% = NHS benchmark.'},{max:10,status:'warn',label:'⚠ Above target',note:'Review pre-op process.'},{max:200,status:'bad',label:'✕ High rate',note:'Investigate systemic causes.'}],gaugeMax:20,decimals:1},
+  // NEW 5
+  {id:'arob',category:'financial',icon:'📈',name:'Avg Revenue per Occupied Bed',shortName:'AROB',desc:'Revenue efficiency per occupied bed — measures yield, not just occupancy',formula:'Total Revenue ÷ Total Occupied Bed Days',inputs:[{id:'revenue',label:'Total Revenue (period)',placeholder:'e.g. 2800000'},{id:'bed_days',label:'Total Occupied Bed Days',placeholder:'e.g. 4200'}],unit:'',prefix:'',calculate:v=>v.revenue/v.bed_days,benchmarks:[{max:999999999,status:'neutral',label:'✓ Calculated',note:'Higher AROB = better revenue per bed utilisation. Compare vs previous periods.'}],gaugeMax:null,decimals:2,isNew:true},
+  {id:'ebitda_margin',category:'financial',icon:'📉',name:'EBITDA Margin',shortName:'EBITDA %',desc:'Operational profitability before finance & depreciation impact',formula:'(EBITDA ÷ Total Revenue) × 100',inputs:[{id:'ebitda',label:'EBITDA',placeholder:'e.g. 420000'},{id:'revenue',label:'Total Revenue',placeholder:'e.g. 2800000'}],unit:'%',calculate:v=>(v.ebitda/v.revenue)*100,benchmarks:[{max:5,status:'bad',label:'✕ Very low margin',note:'Below 5% — review cost structure urgently.'},{max:12,status:'warn',label:'⚠ Below average',note:'Hospital industry target is 10–15%.'},{max:20,status:'good',label:'✓ Healthy margin',note:'Strong operational profitability.'},{max:999,status:'good',label:'✓ Excellent',note:'Exceptional operational efficiency.'}],gaugeMax:30,decimals:1,isNew:true},
+  {id:'dept_contrib',category:'financial',icon:'🏢',name:'Dept Contribution Margin',shortName:'Dept CM%',desc:'Identifies which departments drive profitability',formula:'((Dept Revenue − Dept Direct Cost) ÷ Dept Revenue) × 100',inputs:[{id:'dept_rev',label:'Department Revenue',placeholder:'e.g. 900000'},{id:'dept_cost',label:'Dept Direct Cost',placeholder:'e.g. 600000'}],unit:'%',calculate:v=>((v.dept_rev-v.dept_cost)/v.dept_rev)*100,benchmarks:[{max:0,status:'bad',label:'✕ Loss-making',note:'Department is not covering direct costs.'},{max:15,status:'warn',label:'⚠ Low margin',note:'Review pricing and cost structure.'},{max:35,status:'good',label:'✓ Healthy margin',note:'Good departmental contribution.'},{max:999,status:'good',label:'✓ Excellent',note:'High-performing department.'}],gaugeMax:50,decimals:1,isNew:true},
+  {id:'rev_mix',category:'financial',icon:'🔀',name:'Revenue Mix Ratio',shortName:'Rev Mix',desc:'Private vs Scheme vs Insurance revenue split — determines financial sustainability',formula:'Each payer type ÷ Total Revenue × 100',inputs:[{id:'private_rev',label:'Private / Self-Pay Revenue',placeholder:'e.g. 1200000'},{id:'scheme_rev',label:'Govt Scheme Revenue',placeholder:'e.g. 800000'},{id:'insurance_rev',label:'Insurance Revenue',placeholder:'e.g. 800000'}],unit:'',calculate:v=>{const total=v.private_rev+v.scheme_rev+v.insurance_rev;return total;},isRevMix:true,benchmarks:[],gaugeMax:null,decimals:0,isNew:true},
 ];
 
-/* ── State ────────────────────────────────────────────── */
-let activeKPI  = null;
-let activeFilter = 'all';
-let searchTerm   = '';
+let activeKPI=null,currentFilter='all';
 
-/* ── Filter & Search ──────────────────────────────────── */
-function filterKPIs(cat, btn) {
-  activeFilter = cat;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderCards();
-  closeCalc();
+function filterKPIs(evt,cat){
+  currentFilter=cat;
+  document.querySelectorAll('#quickTabs .tab').forEach(t=>t.classList.remove('active'));
+  evt.target.classList.add('active');
+  renderCards();closeCalc();
 }
 
-function handleSearch(val) {
-  searchTerm = val.trim().toLowerCase();
-  renderCards();
+function renderCards(){
+  const grid=document.getElementById('kpiGrid');
+  const list=currentFilter==='all'?KPIs:KPIs.filter(k=>k.category===currentFilter);
+  grid.innerHTML=list.map((k,i)=>`
+    <div class="kpi-card" id="card-${k.id}" onclick="openCalc('${k.id}')" style="animation-delay:${i*.05}s">
+      <div class="kpi-icon">${k.icon}</div>
+      <div class="kpi-name">${k.shortName}${k.isNew?'<span class="kpi-new">NEW</span>':''}</div>
+      <div class="kpi-desc">${k.desc}</div>
+    </div>`).join('');
 }
 
-function getVisible() {
-  return KPIs.filter(k => {
-    const catOk = activeFilter === 'all' || k.category === activeFilter;
-    if (!searchTerm) return catOk;
-    return catOk && (
-      k.name.toLowerCase().includes(searchTerm) ||
-      k.shortName.toLowerCase().includes(searchTerm) ||
-      k.desc.toLowerCase().includes(searchTerm) ||
-      k.category.toLowerCase().includes(searchTerm)
-    );
-  });
-}
+function openCalc(id){
+  const kpi=KPIs.find(k=>k.id===id);activeKPI=kpi;
+  document.querySelectorAll('.kpi-card').forEach(c=>c.classList.remove('active'));
+  const card=document.getElementById('card-'+id);if(card)card.classList.add('active');
+  const panel=document.getElementById('calcPanel');
 
-/* ── Render Cards ─────────────────────────────────────── */
-function renderCards() {
-  const grid = document.getElementById('kpiGrid');
-  const visible = getVisible();
-  const lbl = document.getElementById('sectionLabel');
-
-  if (!visible.length) {
-    lbl.textContent = '0 results found';
-    grid.innerHTML = `<div class="no-results"><span>🔍</span>No KPIs match your search.</div>`;
-    return;
+  if(kpi.isRevMix){
+    panel.innerHTML=`
+      <div class="calc-header">
+        <div class="calc-icon">${kpi.icon}</div>
+        <div><div class="calc-title">${kpi.name}<span class="badge">${kpi.category}</span></div><div class="calc-subtitle">${kpi.desc}</div></div>
+        <button class="close-btn" onclick="closeCalc()">✕</button>
+      </div>
+      <div class="inputs-row">
+        ${kpi.inputs.map(inp=>`<div class="input-group"><label>${inp.label}</label><input type="number" id="inp-${inp.id}" placeholder="${inp.placeholder}" min="0" oninput="calcRevMix()"></div>`).join('')}
+      </div>
+      <div class="formula-line">Formula: ${kpi.formula}</div>
+      <div class="result-box" id="resultBox"></div>`;
+  } else {
+    panel.innerHTML=`
+      <div class="calc-header">
+        <div class="calc-icon">${kpi.icon}</div>
+        <div><div class="calc-title">${kpi.name}<span class="badge">${kpi.category}</span></div><div class="calc-subtitle">${kpi.desc}</div></div>
+        <button class="close-btn" onclick="closeCalc()">✕</button>
+      </div>
+      <div class="inputs-row">
+        ${kpi.inputs.map(inp=>`<div class="input-group"><label>${inp.label}</label><input type="number" id="inp-${inp.id}" placeholder="${inp.placeholder}" min="0" oninput="autoCalc()"></div>`).join('')}
+      </div>
+      <button class="calc-btn" onclick="calculate()">Calculate KPI</button>
+      <div class="formula-line">Formula: ${kpi.formula}</div>
+      <div class="result-box" id="resultBox"></div>`;
   }
-  lbl.textContent = `${visible.length} KPI${visible.length>1?'s':''} available`;
-
-  grid.innerHTML = visible.map((kpi, i) => `
-    <div class="kpi-card" id="card-${kpi.id}"
-      onclick="openCalc('${kpi.id}')"
-      style="animation-delay:${i*0.04}s">
-      <div class="kpi-card-icon">${kpi.icon}</div>
-      <div class="kpi-card-id">${kpi.shortName}</div>
-      <div class="kpi-card-desc">${kpi.desc}</div>
-      <div class="kpi-card-cat">
-        <span class="cat-badge ${kpi.category}">${kpi.category}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-/* ── Open Calculator ──────────────────────────────────── */
-function openCalc(id) {
-  const kpi = KPIs.find(k => k.id === id);
-  if (!kpi) return;
-  activeKPI = kpi;
-
-  document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById('card-' + id);
-  if (card) card.classList.add('active');
-
-  const panel = document.getElementById('calcPanel');
-  panel.innerHTML = `
-    <div class="calc-header">
-      <div class="calc-icon-wrap">${kpi.icon}</div>
-      <div style="flex:1;min-width:0;">
-        <div class="calc-name">${kpi.name}<span class="cat-badge ${kpi.category}">${kpi.category}</span></div>
-        <div class="calc-desc">${kpi.desc}</div>
-      </div>
-      <button class="close-btn" onclick="closeCalc()" aria-label="Close">✕</button>
-    </div>
-    <div class="inputs-row">
-      ${kpi.inputs.map(inp => `
-        <div class="input-group">
-          <label for="inp-${inp.id}">${inp.label}</label>
-          <input type="number" id="inp-${inp.id}" placeholder="${inp.placeholder}"
-            min="0" step="any" oninput="autoCalc()" autocomplete="off">
-        </div>
-      `).join('')}
-    </div>
-    <div class="btn-row">
-      <button class="calc-btn"   onclick="calculate()">Calculate</button>
-      <button class="reset-btn"  onclick="resetInputs()">Reset</button>
-    </div>
-    <div class="formula">Formula: ${kpi.formula}</div>
-    <div class="result-box" id="resultBox"></div>
-  `;
-
   panel.classList.add('visible');
-  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
-  // Focus first input
-  setTimeout(() => { const f = document.getElementById('inp-'+kpi.inputs[0].id); if(f) f.focus(); }, 50);
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-/* ── Close ────────────────────────────────────────────── */
-function closeCalc() {
-  const panel = document.getElementById('calcPanel');
-  panel.classList.remove('visible');
-  document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active'));
-  activeKPI = null;
-}
-
-/* ── Reset Inputs ─────────────────────────────────────── */
-function resetInputs() {
-  if (!activeKPI) return;
-  activeKPI.inputs.forEach(inp => {
-    const el = document.getElementById('inp-' + inp.id);
-    if (el) el.value = '';
-  });
-  const rb = document.getElementById('resultBox');
-  if (rb) rb.classList.remove('visible');
-}
-
-/* ── Auto-calculate ───────────────────────────────────── */
-function autoCalc() {
-  if (!activeKPI) return;
-  const allFilled = activeKPI.inputs.every(inp => {
-    const el = document.getElementById('inp-' + inp.id);
-    return el && el.value !== '' && !isNaN(parseFloat(el.value));
-  });
-  if (allFilled) calculate(true);
-}
-
-/* ── Calculate ────────────────────────────────────────── */
-function calculate(silent = false) {
-  const kpi = activeKPI;
-  if (!kpi) return;
-
-  const vals = {};
-  let valid = true;
-  kpi.inputs.forEach(inp => {
-    const el = document.getElementById('inp-' + inp.id);
-    const v = parseFloat(el?.value);
-    if (isNaN(v) || v < 0) valid = false;
-    vals[inp.id] = v;
-  });
-  if (!valid) { if (!silent) alert('Please enter valid numbers in all fields.'); return; }
-
-  // Division by zero guard (denominator = last input)
-  const denomKey = kpi.inputs[kpi.inputs.length - 1].id;
-  if (vals[denomKey] === 0) { if (!silent) alert('The denominator cannot be zero.'); return; }
-
-  const result = kpi.calculate(vals);
-  const dec    = kpi.decimals !== undefined ? kpi.decimals : 1;
-  const display= result.toFixed(dec);
-
-  // Status
-  let bm = kpi.benchmarks[kpi.benchmarks.length - 1];
-  for (const b of kpi.benchmarks) { if (result <= b.max) { bm = b; break; } }
-
-  const colorMap = { good: '#22d98f', warn: '#ffb547', bad: '#ff5b6b' };
-  const color = colorMap[bm.status] || '#22d98f';
-
-  // Gauge
-  let gaugeHTML = '';
-  if (kpi.gaugeMax) {
-    const pct = Math.min((result / kpi.gaugeMax) * 100, 100).toFixed(1);
-    gaugeHTML = `
-      <div class="gauge-wrap">
-        <div class="gauge-track">
-          <div class="gauge-fill" id="gaugeFill" style="background:${color};"></div>
-        </div>
-        <div class="gauge-labels"><span>0</span><span>${kpi.gaugeMax}${kpi.unit||''}</span></div>
-      </div>`;
-    setTimeout(() => {
-      const f = document.getElementById('gaugeFill');
-      if (f) f.style.width = pct + '%';
-    }, 60);
-  }
-
-  const prefix = kpi.prefix || '';
-  const unit   = kpi.unit   || '';
-
-  const rb = document.getElementById('resultBox');
-  rb.innerHTML = `
-    <div class="result-top">
-      <div class="result-value" style="color:${color};">${prefix}${display}${unit}</div>
-      <div class="result-meta">
-        <div class="result-kpi-name">${kpi.name}</div>
-        <div class="result-kpi-id">${kpi.shortName}</div>
-      </div>
+function calcRevMix(){
+  const priv=parseFloat(document.getElementById('inp-private_rev')?.value)||0;
+  const scheme=parseFloat(document.getElementById('inp-scheme_rev')?.value)||0;
+  const ins=parseFloat(document.getElementById('inp-insurance_rev')?.value)||0;
+  const total=priv+scheme+ins;
+  if(total===0){document.getElementById('resultBox').classList.remove('visible');return;}
+  const pPriv=((priv/total)*100).toFixed(1);
+  const pScheme=((scheme/total)*100).toFixed(1);
+  const pIns=((ins/total)*100).toFixed(1);
+  const dominant=priv>=scheme&&priv>=ins?'Private':scheme>=priv&&scheme>=ins?'Govt Scheme':'Insurance';
+  const rb=document.getElementById('resultBox');
+  rb.innerHTML=`
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">Revenue Mix Breakdown</div>
+      ${buildMixBar('Private/Self-Pay',pPriv,'#00d4aa')}
+      ${buildMixBar('Govt Scheme',pScheme,'#0099ff')}
+      ${buildMixBar('Insurance',pIns,'#f59e0b')}
     </div>
-    <div class="status-bar ${bm.status}">${bm.label}</div>
-    <div class="benchmark-note">${bm.note}</div>
-    ${gaugeHTML}
-  `;
+    <div class="status-bar neutral">Dominant payer: ${dominant} (${dominant==='Private'?pPriv:dominant==='Govt Scheme'?pScheme:pIns}%)</div>
+    <div class="benchmark-text">High private mix = more pricing control. High scheme = stable but low margin. Balanced mix reduces risk.</div>`;
   rb.classList.add('visible');
+  setTimeout(()=>{
+    document.querySelectorAll('.mix-fill').forEach(el=>{el.style.width=el.dataset.w+'%';});
+  },50);
 }
 
-/* ── Init ─────────────────────────────────────────────── */
-renderCards();
+function buildMixBar(label,pct,color){
+  return`<div style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;font-family:'Space Mono',monospace">
+      <span style="color:var(--text)">${label}</span><span style="color:${color};font-weight:700">${pct}%</span>
+    </div>
+    <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+      <div class="mix-fill" data-w="${pct}" style="width:0%;height:100%;background:${color};border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1)"></div>
+    </div>
+  </div>`;
+}
 
-/* ── Register Service Worker ──────────────────────────── */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('[App] SW registered. Scope:', reg.scope))
-      .catch(err => console.warn('[App] SW registration failed:', err));
+function autoCalc(){
+  if(!activeKPI||activeKPI.isRevMix)return;
+  const vals={};let ready=true;
+  activeKPI.inputs.forEach(inp=>{const el=document.getElementById('inp-'+inp.id);if(!el||el.value===''){ready=false;return;}vals[inp.id]=parseFloat(el.value);});
+  if(ready)calculate(true);
+}
+
+function closeCalc(){document.getElementById('calcPanel').classList.remove('visible');document.querySelectorAll('.kpi-card').forEach(c=>c.classList.remove('active'));activeKPI=null;}
+
+function calculate(silent=false){
+  const kpi=activeKPI;if(!kpi||kpi.isRevMix)return;
+  const vals={};let valid=true;
+  kpi.inputs.forEach(inp=>{const el=document.getElementById('inp-'+inp.id);const v=parseFloat(el?.value);if(isNaN(v)||v<0)valid=false;vals[inp.id]=v;});
+  if(!valid){if(!silent)alert('Please enter valid numbers.');return;}
+  const denKey=kpi.inputs[kpi.inputs.length-1].id;
+  if(vals[denKey]===0){if(!silent)alert('Denominator cannot be zero.');return;}
+  const result=kpi.calculate(vals);
+  const decimals=kpi.decimals!==undefined?kpi.decimals:1;
+  const disp=result.toFixed(decimals);
+  let bm=kpi.benchmarks[kpi.benchmarks.length-1];
+  for(const b of kpi.benchmarks){if(result<=b.max){bm=b;break;}}
+  const gc=bm.status==='good'?'#10b981':bm.status==='warn'?'#f59e0b':bm.status==='bad'?'#ef4444':'#00d4aa';
+  const gw=kpi.gaugeMax?Math.min((result/kpi.gaugeMax)*100,100):0;
+  const rb=document.getElementById('resultBox');
+  rb.innerHTML=`
+    <div class="result-value" style="color:${gc}">${kpi.prefix||''}${parseFloat(disp)>=1000?parseFloat(disp).toLocaleString():disp}${kpi.unit||''}</div>
+    <div class="result-label">${kpi.name}</div>
+    <div class="status-bar ${bm.status}">${bm.label}</div>
+    <div class="benchmark-text">${bm.note}</div>
+    ${kpi.gaugeMax?`<div class="gauge-wrap"><div class="gauge-track"><div class="gauge-fill" id="gf" style="width:0%;background:${gc}"></div></div><div class="gauge-labels"><span>0</span><span>${kpi.gaugeMax}${kpi.unit||''}</span></div></div>`:''}`;
+  rb.classList.add('visible');
+  if(kpi.gaugeMax)setTimeout(()=>{const f=document.getElementById('gf');if(f)f.style.width=gw+'%';},50);
+}
+
+// ── DASHBOARD ──
+let currency='MYR',currSym='RM';
+function setCur(code,sym,el){currency=code;currSym=sym;document.querySelectorAll('.cur-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function goSub(n){
+  document.querySelectorAll('.sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(n===1?'subEntry':'subResults').classList.add('active');
+  document.querySelectorAll('.dash-step').forEach((s,i)=>{s.classList.remove('active','done');if(i+1===n)s.classList.add('active');if(i+1<n)s.classList.add('done');});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function clearDash(){document.querySelectorAll('#subEntry input[type=number],#subEntry input[type=text],#subEntry input[type=date]').forEach(i=>i.value='');}
+function gn(id){const v=parseFloat(document.getElementById(id)?.value);return isNaN(v)?null:v;}
+function gs(id){return document.getElementById(id)?.value?.trim()||'';}
+function pct(a,b,d=1){if(a===null||b===null||b===0)return null;return parseFloat(((a/b)*100).toFixed(d));}
+function dv(a,b,d=1){if(a===null||b===null||b===0)return null;return parseFloat((a/b).toFixed(d));}
+
+function getDashKPIs(){
+  const beds=gn('totalBeds'),occ=gn('occupiedBeds'),adm=gn('totalAdmissions'),dis=gn('totalDischarges'),
+    ipD=gn('totalInpatientDays'),dths=gn('totalDeaths'),rdm=gn('readmissions'),
+    opdV=gn('opdVisits'),opdW=gn('opdTotalWait'),opdOT=gn('opdOnTime'),
+    ss=gn('surgScheduled'),sc=gn('surgCancelled'),scompl=gn('surgCompleted'),scomp=gn('surgComplications'),
+    hai=gn('haiCases'),falls=gn('patientFalls'),
+    nurses=gn('totalNurses'),docs=gn('totalDoctors'),absnt=gn('staffAbsent'),staffSch=gn('staffScheduled'),
+    labT=gn('labTotal'),labOT=gn('labOnTime'),critN=gn('criticalLabNotified'),critT=gn('criticalLabTotal'),
+    cost=gn('totalCost'),rev=gn('totalRevenue'),ebitda=gn('ebitda'),
+    clT=gn('claimsTotal'),clR=gn('claimsRejected'),drug=gn('drugCost'),
+    revPriv=gn('revPrivate'),revSch=gn('revScheme'),revIns=gn('revInsurance');
+  const cs=currSym;
+  return[
+    // EFFICIENCY
+    {id:'bor',cat:'efficiency',name:'Bed Occupancy Rate',val:pct(occ,beds),unit:'%',gaugeMax:120,formula:'Occupied Beds ÷ Total Beds × 100',bench:[{max:60,s:'warn',l:'Below target',n:'Low occupancy — review capacity.'},{max:90,s:'good',l:'Optimal',n:'WHO target: 80–85%.'},{max:999,s:'bad',l:'Overcrowded',n:'Above 90% risks safety.'}]},
+    {id:'alos',cat:'efficiency',name:'Avg Length of Stay',val:dv(ipD,dis),unit:' days',gaugeMax:15,formula:'Inpatient Days ÷ Discharges',bench:[{max:4,s:'good',l:'Excellent',n:'Short stay = efficient care.'},{max:7,s:'warn',l:'Review',n:'Global avg 4–6 days.'},{max:999,s:'bad',l:'Extended',n:'Long ALOS raises costs.'}]},
+    {id:'btr',cat:'efficiency',name:'Bed Turnover Rate',val:dv(dis,beds),unit:' pts/bed',gaugeMax:60,formula:'Discharges ÷ Available Beds',bench:[{max:20,s:'warn',l:'Low',n:'Under 30 may indicate long stays.'},{max:50,s:'good',l:'Healthy',n:'Target 30–50 per bed.'},{max:999,s:'bad',l:'Overcapacity',n:'Insufficient beds.'}]},
+    {id:'opd_wait',cat:'efficiency',name:'OPD Avg Wait Time',val:dv(opdW,opdV,0),unit:' min',gaugeMax:90,formula:'Total OPD Wait ÷ OPD Patients',bench:[{max:30,s:'good',l:'Good',n:'Under 30 min benchmark.'},{max:60,s:'warn',l:'Improve',n:'Review scheduling & triage.'},{max:9999,s:'bad',l:'Poor',n:'Over 60 min impacts satisfaction.'}]},
+    {id:'opd_ot',cat:'efficiency',name:'OPD On-Time Rate',val:pct(opdOT,opdV),unit:'%',gaugeMax:100,formula:'On-Time ÷ Total OPD × 100',bench:[{max:70,s:'bad',l:'Below target',n:'Review scheduling.'},{max:85,s:'warn',l:'Acceptable',n:'Target >85%.'},{max:100,s:'good',l:'On target',n:'Excellent patient flow.'}]},
+    {id:'surg_c',cat:'efficiency',name:'Surgery Cancellation Rate',val:pct(sc,ss),unit:'%',gaugeMax:20,formula:'Cancelled ÷ Scheduled × 100',bench:[{max:5,s:'good',l:'On target',n:'Under 5% = NHS benchmark.'},{max:10,s:'warn',l:'Above target',n:'Review pre-op process.'},{max:200,s:'bad',l:'High',n:'Investigate systemic causes.'}]},
+    // QUALITY
+    {id:'mort',cat:'quality',name:'Gross Mortality Rate',val:pct(dths,adm,2),unit:'%',gaugeMax:6,formula:'Deaths ÷ Admissions × 100',bench:[{max:1,s:'good',l:'Acceptable',n:'Below 1% benchmark.'},{max:3,s:'warn',l:'Above avg',n:'Review case mix.'},{max:200,s:'bad',l:'High',n:'Immediate governance review.'}]},
+    {id:'readm',cat:'quality',name:'30-Day Readmission Rate',val:pct(rdm,dis),unit:'%',gaugeMax:25,formula:'Readmissions ÷ Discharges × 100',bench:[{max:5,s:'good',l:'Excellent',n:'Good discharge planning.'},{max:12,s:'warn',l:'Review',n:'Audit discharge protocols.'},{max:200,s:'bad',l:'High',n:'Urgent quality review.'}]},
+    {id:'hai',cat:'quality',name:'HAI Rate',val:pct(hai,adm,2),unit:'%',gaugeMax:6,formula:'HAI Cases ÷ Admissions × 100',bench:[{max:1,s:'good',l:'Controlled',n:'Good infection control.'},{max:3,s:'warn',l:'Monitor',n:'Review hygiene compliance.'},{max:200,s:'bad',l:'Critical',n:'Immediate audit required.'}]},
+    {id:'falls',cat:'quality',name:'Patient Fall Rate',val:dv(falls,adm,2),unit:' /100 pts',gaugeMax:5,formula:'Falls ÷ Admissions × 100',bench:[{max:1,s:'good',l:'Good safety',n:'Below 1 per 100 patients.'},{max:3,s:'warn',l:'Review',n:'Implement fall prevention.'},{max:999,s:'bad',l:'High rate',n:'Immediate safety review.'}]},
+    {id:'scomp',cat:'quality',name:'Surgical Complication Rate',val:pct(scomp,scompl),unit:'%',gaugeMax:10,formula:'Complications ÷ Completed × 100',bench:[{max:2,s:'good',l:'Within range',n:'Target below 2%.'},{max:5,s:'warn',l:'Elevated',n:'Review technique.'},{max:200,s:'bad',l:'High',n:'Surgical audit required.'}]},
+    // STAFF
+    {id:'pn',cat:'staff',name:'Patient:Nurse Ratio',val:dv(occ,nurses),unit:':1',gaugeMax:10,formula:'Occupied Beds ÷ Nurses on Shift',bench:[{max:4,s:'good',l:'Excellent',n:'Ideal 1:3–4 general wards.'},{max:6,s:'warn',l:'Monitor',n:'Max 1:6 general ward.'},{max:999,s:'bad',l:'Understaffed',n:'High adverse event risk.'}]},
+    {id:'dp',cat:'staff',name:'Doctor:Patient Ratio',val:dv(occ,docs),unit:' pts/doc',gaugeMax:30,formula:'Occupied Beds ÷ Doctors on Duty',bench:[{max:10,s:'good',l:'Good coverage',n:'Adequate physician coverage.'},{max:20,s:'warn',l:'High workload',n:'Review scheduling.'},{max:999,s:'bad',l:'Critically low',n:'Care quality at risk.'}]},
+    {id:'abs',cat:'staff',name:'Staff Absence Rate',val:pct(absnt,staffSch),unit:'%',gaugeMax:15,formula:'Absent Days ÷ Scheduled Days × 100',bench:[{max:3,s:'good',l:'Low',n:'Healthy workforce.'},{max:6,s:'warn',l:'Monitor',n:'Investigate causes.'},{max:200,s:'bad',l:'High',n:'HR intervention needed.'}]},
+    // LAB
+    {id:'labtat',cat:'lab',name:'Lab Turnaround Rate',val:pct(labOT,labT),unit:'%',gaugeMax:100,formula:'Results <1hr ÷ Total Tests × 100',bench:[{max:70,s:'bad',l:'Below target',n:'Review lab workflow.'},{max:85,s:'warn',l:'Improve',n:'Target >90%.'},{max:100,s:'good',l:'On target',n:'Excellent TAT.'}]},
+    {id:'critn',cat:'lab',name:'Critical Lab Notify Rate',val:pct(critN,critT),unit:'%',gaugeMax:100,formula:'Notified ÷ Critical Results × 100',bench:[{max:80,s:'bad',l:'Below target',n:'100% notification mandatory.'},{max:95,s:'warn',l:'Near target',n:'Aim for 100%.'},{max:100,s:'good',l:'On target',n:'All critical values communicated.'}]},
+    // FINANCIAL
+    {id:'cpd',cat:'financial',name:'Cost Per Patient Day',val:dv(cost,ipD,2),unit:'',prefix:cs+' ',gaugeMax:null,formula:'Total Cost ÷ Inpatient Days',bench:[{max:9e9,s:'neutral',l:'Calculated',n:'Compare vs budget targets.'}]},
+    {id:'cpa',cat:'financial',name:'Cost Per Admission',val:dv(cost,adm,2),unit:'',prefix:cs+' ',gaugeMax:null,formula:'Total Cost ÷ Total Admissions',bench:[{max:9e9,s:'neutral',l:'Calculated',n:'Benchmark against peers.'}]},
+    {id:'clrej',cat:'financial',name:'Claim Rejection Rate',val:pct(clR,clT),unit:'%',gaugeMax:30,formula:'Rejected ÷ Total Claims × 100',bench:[{max:5,s:'good',l:'Low rejection',n:'Good billing accuracy.'},{max:15,s:'warn',l:'Review billing',n:'Audit rejection reasons.'},{max:200,s:'bad',l:'High rejection',n:'Revenue leakage — audit now.'}]},
+    {id:'drug',cat:'financial',name:'Drug Cost %',val:pct(drug,cost),unit:'%',gaugeMax:50,formula:'Drug Cost ÷ Total Cost × 100',bench:[{max:20,s:'good',l:'Within range',n:'Below 20% is healthy.'},{max:30,s:'warn',l:'Elevated',n:'Review formulary usage.'},{max:200,s:'bad',l:'High',n:'Pharmacy audit recommended.'}]},
+    // NEW REVENUE KPIs
+    {id:'arob',cat:'revenue',name:'Avg Revenue per Occupied Bed',val:dv(rev,ipD,2),unit:'',prefix:cs+' ',gaugeMax:null,isNew:true,formula:'Total Revenue ÷ Total Occupied Bed Days',bench:[{max:9e9,s:'neutral',l:'Calculated',n:'Higher AROB = better revenue yield per bed. Compare vs previous periods.'}]},
+    {id:'ebitda_m',cat:'revenue',name:'EBITDA Margin',val:pct(ebitda,rev,1),unit:'%',gaugeMax:30,isNew:true,formula:'(EBITDA ÷ Total Revenue) × 100',bench:[{max:5,s:'bad',l:'Very low',n:'Below 5% — review cost structure urgently.'},{max:10,s:'warn',l:'Below average',n:'Hospital target is 10–15%.'},{max:999,s:'good',l:'Healthy margin',n:'Strong operational profitability.'}]},
+  ];
+}
+
+function buildDeptKPIs(){
+  const cs=currSym;
+  const depts=[];
+  for(let i=1;i<=4;i++){
+    const name=gs('dept'+i+'Name');
+    const rev=gn('dept'+i+'Rev');
+    const cost=gn('dept'+i+'Cost');
+    if(name&&rev!==null&&cost!==null){
+      const margin=parseFloat((((rev-cost)/rev)*100).toFixed(1));
+      depts.push({name,rev,cost,margin});
+    }
+  }
+  return depts;
+}
+
+function buildRevMixKPI(){
+  const priv=gn('revPrivate'),sch=gn('revScheme'),ins=gn('revInsurance');
+  if(priv===null&&sch===null&&ins===null)return null;
+  const p=priv||0,s=sch||0,i=ins||0;
+  const total=p+s+i;
+  if(total===0)return null;
+  return{private:((p/total)*100).toFixed(1),scheme:((s/total)*100).toFixed(1),insurance:((i/total)*100).toFixed(1),total};
+}
+
+function getBM(k){if(k.val===null)return null;for(const b of k.bench)if(k.val<=b.max)return b;return k.bench[k.bench.length-1];}
+
+function renderRCard(k,delay){
+  const bm=getBM(k);if(!bm)return'';
+  const s=bm.s;
+  const gc=s==='good'?'#10b981':s==='warn'?'#f59e0b':s==='bad'?'#ef4444':'#00d4aa';
+  const disp=k.val>=1000?parseFloat(k.val).toLocaleString():k.val;
+  const pre=k.prefix||'';
+  const newTag=k.isNew?'<span style="display:inline-block;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:#0099ff;font-family:Space Mono,monospace;font-size:8px;padding:1px 5px;border-radius:3px;text-transform:uppercase;margin-left:5px;">NEW</span>':'';
+  return`<div class="r-card ${s}" style="animation-delay:${delay}s">
+    <div class="r-top"><div class="r-name">${k.name}${newTag}</div><div class="r-badge ${s}">${bm.l}</div></div>
+    <div class="r-val ${s}">${pre}${disp}<span class="r-unit">${k.unit}</span></div>
+    <div class="r-formula">${k.formula}</div>
+    ${k.gaugeMax?`<div class="r-gauge"><div class="r-gauge-fill" id="rg-${k.id}" style="width:0%;background:${gc}"></div></div>`:''}
+    <div class="r-note">${bm.n}</div>
+  </div>`;
+}
+
+function renderCat(kpis,catId,label,icon,cid){
+  const list=kpis.filter(k=>k.cat===catId&&k.val!==null);
+  if(!list.length){document.getElementById(cid).innerHTML='';return;}
+  let html=`<div class="section-head">${icon} ${label}</div><div class="results-grid">`;
+  list.forEach((k,i)=>{html+=renderRCard(k,i*.06);});
+  html+='</div>';
+  document.getElementById(cid).innerHTML=html;
+  setTimeout(()=>{
+    list.forEach(k=>{if(k.gaugeMax){const el=document.getElementById('rg-'+k.id);const bm=getBM(k);if(el&&bm){const gc=bm.s==='good'?'#10b981':bm.s==='warn'?'#f59e0b':bm.s==='bad'?'#ef4444':'#00d4aa';el.style.width=Math.min((k.val/k.gaugeMax)*100,100)+'%';el.style.background=gc;}}});
+  },80);
+}
+
+function renderDeptCards(depts){
+  if(!depts.length){document.getElementById('catRevenue').innerHTML='';return;}
+  let html='<div class="section-head">🏢 Department Contribution Margin <span style="font-size:9px;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:#0099ff;padding:2px 7px;border-radius:3px;margin-left:6px;text-transform:uppercase;letter-spacing:1px;">NEW</span></div><div class="results-grid">';
+  depts.forEach((d,i)=>{
+    const s=d.margin<0?'bad':d.margin<15?'warn':'good';
+    const gc=s==='good'?'#10b981':s==='warn'?'#f59e0b':'#ef4444';
+    const note=d.margin<0?'Department not covering direct costs. Urgent review needed.':d.margin<15?'Low margin — review pricing and cost structure.':'Healthy departmental contribution.';
+    html+=`<div class="r-card ${s}" style="animation-delay:${i*.06}s">
+      <div class="r-top"><div class="r-name">${d.name}</div><div class="r-badge ${s}">${d.margin<0?'Loss-making':d.margin<15?'Low margin':'Healthy'}</div></div>
+      <div class="r-val ${s}">${d.margin.toFixed(1)}<span class="r-unit">%</span></div>
+      <div class="r-formula">(Revenue − Direct Cost) ÷ Revenue × 100</div>
+      <div class="r-gauge"><div class="r-gauge-fill" style="width:${Math.max(0,Math.min((d.margin/50)*100,100))}%;background:${gc}"></div></div>
+      <div class="r-note">${note}</div>
+    </div>`;
   });
+  html+='</div>';
+
+  // Rev mix card
+  const mix=buildRevMixKPI();
+  if(mix){
+    html+=`<div style="margin-bottom:18px">
+      <div class="r-card neutral" style="max-width:500px">
+        <div class="r-top"><div class="r-name">Revenue Mix Ratio <span style="display:inline-block;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:#0099ff;font-size:8px;padding:1px 5px;border-radius:3px;text-transform:uppercase;margin-left:4px;">NEW</span></div></div>
+        <div style="margin:8px 0">${buildMixBarStatic('Private/Self-Pay',mix.private,'#00d4aa')}${buildMixBarStatic('Govt Scheme',mix.scheme,'#0099ff')}${buildMixBarStatic('Insurance',mix.insurance,'#f59e0b')}</div>
+        <div class="r-note">High private mix = more pricing control. High scheme = stable but lower margin. Balanced mix reduces concentration risk.</div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('catRevenue').innerHTML=html;
 }
+
+function buildMixBarStatic(label,pct,color){
+  return`<div style="margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;font-family:'Space Mono',monospace">
+      <span style="color:var(--text)">${label}</span><span style="color:${color};font-weight:700">${pct}%</span>
+    </div>
+    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+      <div style="width:${pct}%;height:100%;background:${color};border-radius:3px;"></div>
+    </div>
+  </div>`;
+}
+
+function calcDash(){
+  const kpis=getDashKPIs();
+  const depts=buildDeptKPIs();
+  const mix=buildRevMixKPI();
+  const avail=kpis.filter(k=>k.val!==null);
+  if(!avail.length&&!depts.length&&!mix){alert('Please enter at least some data first.');return;}
+  goSub(2);
+  const hospName=gs('hospName')||'Hospital KPI Report';
+  const df=gs('dateFrom'),dt=gs('dateTo'),dept=gs('dept'),prep=gs('prepBy');
+  const period=df&&dt?`${df} — ${dt}`:df?`From ${df}`:dt?`To ${dt}`:'Custom Period';
+  const sub=[dept,period,prep?'Prepared by: '+prep:''].filter(Boolean).join(' · ');
+  document.getElementById('rTitle').textContent=hospName;
+  document.getElementById('rSub').textContent=sub;
+  document.getElementById('printHeader').innerHTML=`<h2>${hospName}</h2><p>${sub}</p><p style="font-size:10px;color:#888;margin-top:3px">Generated ${new Date().toLocaleDateString()} · Calculated locally — no data stored</p>`;
+  const scored=avail.filter(k=>getBM(k)&&getBM(k).s!=='neutral');
+  const good=scored.filter(k=>getBM(k).s==='good').length;
+  const warn=scored.filter(k=>getBM(k).s==='warn').length;
+  const bad=scored.filter(k=>getBM(k).s==='bad').length;
+  const score=scored.length?Math.round((good/scored.length)*100):0;
+  const sc=score>=70?'#10b981':score>=50?'#f59e0b':'#ef4444';
+  document.getElementById('scoreStrip').innerHTML=`
+    <div class="score-main"><div class="score-lbl">Overall KPI Score</div><div class="score-num" style="color:${sc}">${score}<small>/100</small></div><div class="score-meta">${avail.length} of ${kpis.length} KPIs calculated</div></div>
+    <div class="score-pills">
+      <div class="score-pill"><div class="score-pill-val g">${good}</div><div class="score-pill-label">On Target</div></div>
+      <div class="score-pill"><div class="score-pill-val w">${warn}</div><div class="score-pill-label">Review</div></div>
+      <div class="score-pill"><div class="score-pill-val b">${bad}</div><div class="score-pill-label">Critical</div></div>
+    </div>`;
+  const missing=kpis.filter(k=>k.val===null).length;
+  document.getElementById('missingNote').innerHTML=missing?`<div class="missing-alert no-print">ℹ ${missing} KPI${missing>1?'s':''} couldn't be calculated — fill in more data to unlock them.</div>`:'';
+  renderCat(kpis,'efficiency','Efficiency KPIs','⚡','catEfficiency');
+  renderCat(kpis,'quality','Quality & Safety','🔬','catQuality');
+  renderCat(kpis,'staff','Staffing KPIs','👩‍⚕️','catStaff');
+  renderCat(kpis,'lab','Lab & Diagnostics','🧪','catLab');
+  renderCat(kpis,'financial','Financial KPIs','💰','catFinancial');
+  renderDeptCards(depts);
+  // Render revenue KPIs if no dept data
+  if(!depts.length&&!mix){
+    const revKPIs=kpis.filter(k=>k.cat==='revenue'&&k.val!==null);
+    if(revKPIs.length){
+      let html='<div class="section-head">📈 Revenue Performance KPIs <span style="font-size:9px;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:#0099ff;padding:2px 7px;border-radius:3px;margin-left:6px;text-transform:uppercase;letter-spacing:1px;">NEW</span></div><div class="results-grid">';
+      revKPIs.forEach((k,i)=>{html+=renderRCard(k,i*.06);});
+      html+='</div>';
+      document.getElementById('catRevenue').innerHTML=html;
+      setTimeout(()=>{revKPIs.forEach(k=>{if(k.gaugeMax){const el=document.getElementById('rg-'+k.id);const bm=getBM(k);if(el&&bm){const gc=bm.s==='good'?'#10b981':bm.s==='warn'?'#f59e0b':bm.s==='bad'?'#ef4444':'#00d4aa';el.style.width=Math.min((k.val/k.gaugeMax)*100,100)+'%';el.style.background=gc;}}});},80);
+    }
+  }
+}
+
+renderCards();
+window.onload=()=>{
+  const now=new Date();
+  const y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
+  const last=new Date(y,now.getMonth()+1,0).getDate();
+  document.getElementById('dateFrom').value=`${y}-${m}-01`;
+  document.getElementById('dateTo').value=`${y}-${m}-${last}`;
+};
 </script>
 </body>
 </html>
