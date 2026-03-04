@@ -307,7 +307,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
           <span class="cb-tag">NABH Analytics</span>
           <span class="cb-tag">Financial KPIs</span>
         </div>
-        <a class="cb-email" id="quickEmail" href="#">upadhyay.mehul9@gmail.com</a>
+        <a class="cb-email" id="quickEmail" href="#"><span class="__cf_email__" data-cfemail="deabaebfbab6a7bfa7f0b3bbb6abb2e79eb9b3bfb7b2f0bdb1b3">[email&#160;protected]</span></a>
       </div>
     </div>
   </div>
@@ -483,7 +483,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── MODE SWITCH ──
 function switchMode(m){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1170,7 +1170,7 @@ window.onload=()=>{
             <div class="gcontact-body">
               <div class="gcontact-title">Need a Custom Hospital KPI Tool? Let's Talk.</div>
               <div class="gcontact-desc">Are you a hospital, clinic, or healthcare group looking for more KPIs, custom dashboards, or tailored reporting tools? Get in touch &mdash; happy to help. Also building <strong style="color:var(--text)">OPD Queue Managers</strong> and <strong style="color:var(--text)">Automatic Appointment Schedulers</strong> &mdash; contact for a demo.</div>
-              <a id="guideEmail" href="#" class="gcontact-email-link">upadhyay.mehul9@gmail.com</a>
+              <a id="guideEmail" href="#" class="gcontact-email-link"><span class="__cf_email__" data-cfemail="6c191c0d0804150d15420109041900552c0b010d0500420f0301">[email&#160;protected]</span></a>
               <div class="gcontact-tags">
                 <span class="gctag">Custom KPI Dashboards</span>
                 <span class="gctag">Hospital Analytics</span>
@@ -1197,23 +1197,33 @@ window.onload=()=>{
 
       <!-- FOOTER -->
       <div class="guide-footer">
-        Built By Dr Upadhyay with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored<br>
+        Built with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored<br>
         Benchmarks based on WHO guidelines, NHS standards &amp; international healthcare quality frameworks<br>
         <span id="footerEmail" style="color:var(--accent);font-size:10px;letter-spacing:1px;"></span>
-      </div>
-
+            </div>
     </div>
   </div>
 </div>
 
 <script>
 (function(){
-  var em='upadhyay.mehul9@gmail.com';
-  var el=document.getElementById('footerEmail');
-  if(el){el.textContent=em;el.href='mailto:'+em;}
-  var ge=document.getElementById('guideEmail');
-  if(ge){ge.href='mailto:'+em;}
+  var em="upadhyay.mehul9@gmail.com";
+  var el=document.getElementById("footerEmail");
+  if(el){el.textContent=em;el.href="mailto:"+em;}
+  var ge=document.getElementById("guideEmail");
+  if(ge){ge.href="mailto:"+em;}
 })();
 </script>
+
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("/hospital-kpi-monitor/sw.js")
+      .then(function(reg){console.log("SW registered:", reg.scope);})
+      .catch(function(err){console.log("SW failed:", err);});
+  });
+}
+</script>
+
 </body>
 </html>
