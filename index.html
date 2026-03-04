@@ -230,6 +230,28 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
 .gtip-content{font-size:12.5px;color:var(--text);line-height:1.6;}
 .guide-footer{text-align:center;padding:28px 0 0;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.8;}
 
+
+/* ── CONTACT & DOWNLOAD SECTION ── */
+.guide-contact-sec{}
+.gcontact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:580px){.gcontact-grid{grid-template-columns:1fr;}}
+.gcontact-card{border-radius:12px;padding:20px;border:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;transition:border-color .2s;}
+.gcontact-email{background:rgba(0,212,170,.05);border-color:rgba(0,212,170,.2);}
+.gcontact-email:hover{border-color:var(--accent);}
+.gcontact-pdf{background:rgba(0,153,255,.05);border-color:rgba(0,153,255,.2);}
+.gcontact-pdf:hover{border-color:var(--accent2);}
+.gcontact-icon{font-size:28px;flex-shrink:0;line-height:1;}
+.gcontact-body{flex:1;}
+.gcontact-title{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);margin-bottom:7px;line-height:1.4;}
+.gcontact-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.gcontact-email-link{display:inline-block;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid rgba(0,212,170,.3);background:rgba(0,212,170,.08);padding:8px 14px;border-radius:8px;margin-bottom:12px;transition:all .2s;}
+.gcontact-email-link:hover{background:rgba(0,212,170,.18);border-color:var(--accent);}
+.gcontact-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.gctag{font-family:'Space Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);letter-spacing:.5px;}
+.gdownload-btn{display:inline-block;background:var(--accent2);color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:10px 18px;border-radius:9px;text-decoration:none;margin-bottom:10px;transition:all .2s;letter-spacing:.5px;}
+.gdownload-btn:hover{background:#007acc;transform:translateY(-1px);}
+.gcontact-note{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.6;}
+
 </style>
 </head>
 <body>
@@ -1105,9 +1127,41 @@ window.onload=()=>{
         </div>
       </div>
 
+      <!-- DOWNLOAD + CONTACT -->
+      <div class="gsec guide-contact-sec" style="margin-top:16px;">
+        <div class="gsec-head">📬 Get in Touch</div>
+        <div class="gcontact-grid">
+          <div class="gcontact-card gcontact-email">
+            <div class="gcontact-icon">✉️</div>
+            <div class="gcontact-body">
+              <div class="gcontact-title">Contact for Custom KPI Tools &amp; Consulting</div>
+              <div class="gcontact-desc">Are you a hospital, clinic, or healthcare group looking for more KPIs, custom dashboards, or tailored reporting tools? Get in touch — we can help build what you need.</div>
+              <a href="mailto:upadhyay.mehul9@gmail.com" class="gcontact-email-link">upadhyay.mehul9@gmail.com</a>
+              <div class="gcontact-tags">
+                <span class="gctag">Custom KPI Dashboards</span>
+                <span class="gctag">Hospital Analytics</span>
+                <span class="gctag">Quality Reporting</span>
+                <span class="gctag">Financial KPIs</span>
+                <span class="gctag">Training &amp; Workshops</span>
+              </div>
+            </div>
+          </div>
+          <div class="gcontact-card gcontact-pdf">
+            <div class="gcontact-icon">📄</div>
+            <div class="gcontact-body">
+              <div class="gcontact-title">Download Full Reference Guide (PDF)</div>
+              <div class="gcontact-desc">Get the complete 12-page KPI Reference Manual covering all 17 KPIs, formulas, benchmarks, data entry guide, and best practices — ready to print or share.</div>
+              <a href="hospital-kpi-guide.pdf" download class="gdownload-btn">⬇ Download PDF Guide</a>
+              <div class="gcontact-note">Save to your device · Share with your team · Print for meetings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- FOOTER -->
       <div class="guide-footer">
-        Built with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored &nbsp;·&nbsp; Benchmarks based on WHO &amp; international standards
+        Built with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored<br>
+        Benchmarks based on WHO guidelines, NHS standards &amp; international healthcare quality frameworks
       </div>
 
     </div>
