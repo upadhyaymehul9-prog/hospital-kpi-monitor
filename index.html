@@ -17,6 +17,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
 .mode-btn{padding:6px 14px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .mode-btn.active{background:var(--accent);color:#000;font-weight:700;}
 .mode-btn:not(.active):hover{color:var(--accent);}
+.guide-btn{padding:6px 14px;border-radius:7px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.5px;cursor:pointer;transition:all .2s;white-space:nowrap;margin-left:4px;}
+.guide-btn:hover,.guide-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(0,153,255,.1);}
 .page{display:none;position:relative;z-index:1;}
 .page.active{display:block;}
 .container{max-width:920px;margin:0 auto;padding:0 20px;}
@@ -161,15 +163,83 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
 .print-header p{font-size:11px;color:#555;margin-top:3px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── GUIDE PAGE ── */
+.guide-wrap{max-width:860px;margin:0 auto;padding:0 20px 60px;}
+.guide-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden;}
+.guide-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,212,170,.08) 0%,transparent 70%);pointer-events:none;}
+.guide-eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+.guide-title{font-family:'Space Mono',monospace;font-size:clamp(20px,4vw,32px);font-weight:700;letter-spacing:-1px;line-height:1.15;margin-bottom:10px;}
+.guide-title span{color:var(--accent);}
+.guide-subtitle{font-size:14px;color:var(--muted);max-width:520px;margin:0 auto 24px;}
+.guide-stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;}
+.gs-item{text-align:center;}
+.gs-val{display:block;font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--accent);}
+.gs-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.guide-body{padding-top:8px;}
+.guide-toc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin:24px 0 8px;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;}
+.gtoc-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap;padding-top:2px;}
+.gtoc-links{display:flex;flex-wrap:wrap;gap:8px;}
+.gtoc-link{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-decoration:none;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:var(--surface2);transition:all .2s;white-space:nowrap;}
+.gtoc-link:hover{border-color:var(--accent);color:var(--accent);}
+.new-tag{display:inline-block;background:rgba(0,153,255,.15);border:1px solid rgba(0,153,255,.3);color:var(--accent2);font-family:'Space Mono',monospace;font-size:8px;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:1px;margin-left:5px;vertical-align:middle;}
+.gsec{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:16px;scroll-margin-top:70px;}
+.gsec-head{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.gsec-subhead{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin:18px 0 10px;}
+.gsec-body{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+.ginfo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:4px;}
+.ginfo-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;gap:10px;align-items:flex-start;}
+.ginfo-icon{font-size:20px;flex-shrink:0;}
+.ginfo-text{font-size:12px;color:var(--text);line-height:1.5;}
+.gmode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:520px){.gmode-grid{grid-template-columns:1fr;}}
+.gmode-card{border-radius:12px;padding:16px;border:1px solid var(--border);}
+.gmode-quick{background:rgba(0,212,170,.05);border-color:rgba(0,212,170,.2);}
+.gmode-dash{background:rgba(0,153,255,.05);border-color:rgba(0,153,255,.2);}
+.gmode-label{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.gmode-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.gsteps{display:flex;flex-direction:column;gap:5px;}
+.gstep{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);}
+.gstep-num{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#000;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gmode-dash .gstep-num{background:var(--accent2);}
+.gtip-box{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.25);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--text);line-height:1.6;margin-top:14px;}
+.gkpi-list{display:flex;flex-direction:column;gap:8px;}
+.gkpi-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;border-left:3px solid var(--accent);}
+.gkpi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:5px;flex-wrap:wrap;}
+.gkpi-name{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);}
+.gbench{font-family:'Space Mono',monospace;font-size:9px;padding:2px 8px;border-radius:4px;font-weight:700;white-space:nowrap;}
+.gbench.good{background:rgba(16,185,129,.15);color:var(--green);}
+.gbench.warn{background:rgba(245,158,11,.15);color:var(--warn);}
+.gbench.bad{background:rgba(239,68,68,.15);color:var(--danger);}
+.gkpi-formula{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:5px;}
+.gkpi-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.gbench-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
+.gbench-table{width:100%;border-collapse:collapse;font-size:12px;}
+.gbench-table thead tr{background:var(--surface3);}
+.gbench-table th{padding:10px 12px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);}
+.gbench-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);font-size:12px;}
+.gbench-table tbody tr:last-child td{border-bottom:none;}
+.gbench-table tbody tr:nth-child(even){background:var(--surface2);}
+.gbench-table td:nth-child(2){color:var(--green);font-weight:600;}
+.gbench-table td:nth-child(3){color:var(--warn);font-weight:600;}
+.gbench-table td:nth-child(4){color:var(--danger);font-weight:600;}
+.gbench-table td:first-child{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--text);}
+.gtips-list{display:flex;flex-direction:column;gap:8px;}
+.gtip-item{display:flex;gap:14px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.gtip-num{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent);flex-shrink:0;line-height:1;min-width:28px;}
+.gtip-content{font-size:12.5px;color:var(--text);line-height:1.6;}
+.guide-footer{text-align:center;padding:28px 0 0;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.8;}
+
 </style>
 </head>
 <body>
 <nav>
   <div class="nav-brand">Hospital <span>KPI</span> Monitor</div>
   <div class="nav-modes">
-    <button class="mode-btn active" onclick="switchMode('quick')">⚡ Quick Calc</button>
-    <button class="mode-btn" onclick="switchMode('dashboard')">📊 Full Dashboard</button>
+    <button class="mode-btn active" id="modeQuick" onclick="switchMode('quick')">⚡ Quick Calc</button>
+    <button class="mode-btn" id="modeDash" onclick="switchMode('dashboard')">📊 Full Dashboard</button>
   </div>
+  <button class="guide-btn" onclick="switchMode('guide')" id="modeGuide" title="User Guide">? Guide</button>
 </nav>
 
 <!-- QUICK CALCULATOR -->
@@ -368,8 +438,14 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,15,26,.95);backdrop-fil
 function switchMode(m){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(m==='quick'?'pageQuick':'pageDash').classList.add('active');
-  document.querySelectorAll('.mode-btn')[m==='quick'?0:1].classList.add('active');
+  document.getElementById('modeGuide').classList.remove('active');
+  if(m==='guide'){
+    document.getElementById('pageGuide').classList.add('active');
+    document.getElementById('modeGuide').classList.add('active');
+  } else {
+    document.getElementById(m==='quick'?'pageQuick':'pageDash').classList.add('active');
+    document.querySelectorAll('.mode-btn')[m==='quick'?0:1].classList.add('active');
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -734,5 +810,309 @@ window.onload=()=>{
   document.getElementById('dateTo').value=`${y}-${m}-${last}`;
 };
 </script>
+
+<!-- USER GUIDE PAGE -->
+<div class="page" id="pageGuide">
+  <div class="guide-wrap">
+    <div class="guide-hero">
+      <div class="guide-hero-inner">
+        <div class="guide-eyebrow">■ Documentation</div>
+        <h2 class="guide-title">User Guide &amp; <span>KPI Reference</span></h2>
+        <p class="guide-subtitle">Everything you need to understand and use Hospital KPI Monitor effectively.</p>
+        <div class="guide-stats">
+          <div class="gs-item"><span class="gs-val">17</span><span class="gs-lbl">KPIs</span></div>
+          <div class="gs-item"><span class="gs-val">2</span><span class="gs-lbl">Modes</span></div>
+          <div class="gs-item"><span class="gs-val">6</span><span class="gs-lbl">Categories</span></div>
+          <div class="gs-item"><span class="gs-val">0</span><span class="gs-lbl">Login needed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-body">
+
+      <!-- TOC -->
+      <div class="guide-toc">
+        <div class="gtoc-title">Jump to section</div>
+        <div class="gtoc-links">
+          <a href="#gs-whatisit" class="gtoc-link">① What is this app?</a>
+          <a href="#gs-howtouse" class="gtoc-link">② How to use</a>
+          <a href="#gs-efficiency" class="gtoc-link">③ Efficiency KPIs</a>
+          <a href="#gs-quality" class="gtoc-link">④ Quality &amp; Safety KPIs</a>
+          <a href="#gs-staff" class="gtoc-link">⑤ Staffing KPIs</a>
+          <a href="#gs-financial" class="gtoc-link">⑥ Financial KPIs</a>
+          <a href="#gs-revenue" class="gtoc-link">⑦ Revenue KPIs <span class="new-tag">NEW</span></a>
+          <a href="#gs-benchmarks" class="gtoc-link">⑧ Benchmark table</a>
+          <a href="#gs-tips" class="gtoc-link">⑨ Tips &amp; best practices</a>
+        </div>
+      </div>
+
+      <!-- SECTION: WHAT IS IT -->
+      <div class="gsec" id="gs-whatisit">
+        <div class="gsec-head">① What is Hospital KPI Monitor?</div>
+        <p class="gsec-body">Hospital KPI Monitor is a <strong>free, browser-based tool</strong> for hospital administrators, quality managers, clinical leads, and finance teams. It lets any healthcare facility instantly calculate, benchmark, and report on critical performance indicators — with no software installation, login, or data upload required.</p>
+        <div class="ginfo-grid">
+          <div class="ginfo-card"><div class="ginfo-icon">🔒</div><div class="ginfo-text"><b>Zero data storage</b><br>Nothing leaves your browser. Ever.</div></div>
+          <div class="ginfo-card"><div class="ginfo-icon">⚡</div><div class="ginfo-text"><b>Instant results</b><br>Results appear as you type.</div></div>
+          <div class="ginfo-card"><div class="ginfo-icon">📱</div><div class="ginfo-text"><b>Works on any device</b><br>Mobile, tablet, or desktop.</div></div>
+          <div class="ginfo-card"><div class="ginfo-icon">🖨️</div><div class="ginfo-text"><b>PDF export</b><br>Clean 1-page scorecard for reports.</div></div>
+        </div>
+      </div>
+
+      <!-- SECTION: HOW TO USE -->
+      <div class="gsec" id="gs-howtouse">
+        <div class="gsec-head">② How to Use the App</div>
+        <p class="gsec-body">The app has two modes accessible from the top navigation bar:</p>
+
+        <div class="gmode-grid">
+          <div class="gmode-card gmode-quick">
+            <div class="gmode-label">⚡ Quick Calculator</div>
+            <div class="gmode-desc">Pick any KPI card, enter 2–3 numbers, get an instant result with colour-coded benchmark. Best for spot-checking a single metric.</div>
+            <div class="gsteps">
+              <div class="gstep"><span class="gstep-num">1</span>Click "⚡ Quick Calc" in the nav</div>
+              <div class="gstep"><span class="gstep-num">2</span>Filter by category or browse all 17 KPIs</div>
+              <div class="gstep"><span class="gstep-num">3</span>Click any KPI card to open the calculator</div>
+              <div class="gstep"><span class="gstep-num">4</span>Enter numbers — result appears instantly</div>
+              <div class="gstep"><span class="gstep-num">5</span>Read the colour: 🟢 Good · 🟡 Review · 🔴 Critical</div>
+            </div>
+          </div>
+          <div class="gmode-card gmode-dash">
+            <div class="gmode-label">📊 Full Dashboard</div>
+            <div class="gmode-desc">Enter all hospital data once in a single form. All KPIs auto-calculate. Export a clean PDF scorecard for meetings.</div>
+            <div class="gsteps">
+              <div class="gstep"><span class="gstep-num">1</span>Click "📊 Full Dashboard" in the nav</div>
+              <div class="gstep"><span class="gstep-num">2</span>Enter hospital name and report period</div>
+              <div class="gstep"><span class="gstep-num">3</span>Fill in available data fields (skip unknowns)</div>
+              <div class="gstep"><span class="gstep-num">4</span>Click "⚡ Auto-Calculate All KPIs"</div>
+              <div class="gstep"><span class="gstep-num">5</span>Review results and click "🖨 Print / PDF"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gtip-box">
+          <b>💡 PDF Export tip:</b> In the print dialog, set destination to <b>"Save as PDF"</b> (Chrome/Edge) or <b>"PDF"</b> (Safari). The scorecard auto-hides buttons and shows only your KPI results.
+        </div>
+      </div>
+
+      <!-- SECTION: EFFICIENCY -->
+      <div class="gsec" id="gs-efficiency">
+        <div class="gsec-head">③ Efficiency KPIs</div>
+        <p class="gsec-body">Efficiency KPIs measure how well the hospital utilises its physical and operational resources.</p>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Bed Occupancy Rate (BOR)</span><span class="gbench good">Target 80–85%</span></div>
+            <div class="gkpi-formula">Occupied Beds ÷ Total Available Beds × 100</div>
+            <div class="gkpi-desc">Measures how full the hospital is. Too low wastes resources; too high (>90%) risks patient safety, infection spread, and staff burnout.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Avg Length of Stay (ALOS)</span><span class="gbench good">Target &lt; 4–6 days</span></div>
+            <div class="gkpi-formula">Total Inpatient Days ÷ Total Discharges</div>
+            <div class="gkpi-desc">Shorter stays indicate efficient clinical pathways. Long ALOS raises costs, infection risk, and reduces bed availability.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Bed Turnover Rate (BTR)</span><span class="gbench warn">Target 30–50 pts/bed</span></div>
+            <div class="gkpi-formula">Total Discharges ÷ Total Available Beds</div>
+            <div class="gkpi-desc">How many patients each bed serves per period. Low BTR may signal inefficiency or excessive length of stay.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">OPD Avg Wait Time</span><span class="gbench good">Target &lt; 30 min</span></div>
+            <div class="gkpi-formula">Total OPD Wait Time ÷ Total OPD Patients</div>
+            <div class="gkpi-desc">Long waits reduce patient satisfaction and indicate triage or scheduling problems. Over 60 minutes is unacceptable.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">OPD On-Time Rate</span><span class="gbench good">Target &gt; 85%</span></div>
+            <div class="gkpi-formula">Patients Seen on Time ÷ Total OPD Visits × 100</div>
+            <div class="gkpi-desc">Percentage of OPD patients seen within the target time. Low rates reflect scheduling or capacity problems.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Surgery Cancellation Rate</span><span class="gbench good">Target &lt; 5%</span></div>
+            <div class="gkpi-formula">Cancelled Surgeries ÷ Scheduled Surgeries × 100</div>
+            <div class="gkpi-desc">High cancellations waste theatre time and delay patient care. Review pre-operative assessment and scheduling processes.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: QUALITY -->
+      <div class="gsec" id="gs-quality">
+        <div class="gsec-head">④ Quality &amp; Safety KPIs</div>
+        <p class="gsec-body">Quality KPIs assess clinical outcomes and patient safety — among the most critical indicators, closely monitored by accreditation bodies.</p>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Gross Mortality Rate</span><span class="gbench bad">Target &lt; 1%</span></div>
+            <div class="gkpi-formula">Total Deaths ÷ Total Admissions × 100</div>
+            <div class="gkpi-desc">In-hospital death rate. Must be reviewed with case mix context — ICU and oncology wards have naturally higher rates.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">30-Day Readmission Rate</span><span class="gbench bad">Target &lt; 5%</span></div>
+            <div class="gkpi-formula">30-Day Readmissions ÷ Total Discharges × 100</div>
+            <div class="gkpi-desc">High readmissions suggest inadequate discharge planning or premature discharge. Review follow-up and patient education.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">HAI Rate</span><span class="gbench bad">Target &lt; 1%</span></div>
+            <div class="gkpi-formula">HAI Cases ÷ Total Admissions × 100</div>
+            <div class="gkpi-desc">Healthcare-associated infections are largely preventable. High rates indicate gaps in infection control protocols.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Patient Fall Rate</span><span class="gbench bad">Target &lt; 1 per 100 pts</span></div>
+            <div class="gkpi-formula">Patient Falls ÷ Total Admissions × 100</div>
+            <div class="gkpi-desc">Falls cause harm and extend stays. Review fall risk assessments, bed rails, and patient mobility protocols.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Surgical Complication Rate</span><span class="gbench bad">Target &lt; 2%</span></div>
+            <div class="gkpi-formula">Surgical Complications ÷ Completed Surgeries × 100</div>
+            <div class="gkpi-desc">Complications increase length of stay and costs. Track trends per surgeon and procedure type.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: STAFF -->
+      <div class="gsec" id="gs-staff">
+        <div class="gsec-head">⑤ Staffing KPIs</div>
+        <p class="gsec-body">Staffing KPIs ensure adequate human resources for safe, quality care. Understaffing is directly linked to adverse patient events.</p>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Patient:Nurse Ratio</span><span class="gbench warn">Ideal 1:3–4, Max 1:6</span></div>
+            <div class="gkpi-formula">Occupied Beds ÷ Nurses on Shift</div>
+            <div class="gkpi-desc">Above 1:6 significantly increases risk of adverse events. ICU should maintain 1:1–2. General ward maximum is 1:6.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Doctor:Patient Ratio</span><span class="gbench warn">Target &lt; 10 pts/doc</span></div>
+            <div class="gkpi-formula">Occupied Beds ÷ Doctors on Duty</div>
+            <div class="gkpi-desc">Ensures physicians have adequate time per patient. Very high ratios reduce quality of clinical assessment and decision-making.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Staff Absence Rate</span><span class="gbench good">Target &lt; 3%</span></div>
+            <div class="gkpi-formula">Staff Days Lost ÷ Scheduled Staff Days × 100</div>
+            <div class="gkpi-desc">High absence rates signal burnout, morale issues, or health problems. Review shift patterns and workload distribution.</div>
+          </div>
+        </div>
+        <div class="gsec-subhead">Lab &amp; Diagnostics</div>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Lab Turnaround Rate</span><span class="gbench good">Target &gt; 90%</span></div>
+            <div class="gkpi-formula">Results &lt; 1hr ÷ Total Lab Tests × 100</div>
+            <div class="gkpi-desc">Measures how quickly lab results are available. Delays impact clinical decisions and bed flow.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Critical Lab Notify Rate</span><span class="gbench bad">Target 100%</span></div>
+            <div class="gkpi-formula">Critical Results Notified ÷ Total Critical Results × 100</div>
+            <div class="gkpi-desc">100% notification is a patient safety standard. Any missed critical value notification is a reportable risk event.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: FINANCIAL -->
+      <div class="gsec" id="gs-financial">
+        <div class="gsec-head">⑥ Financial KPIs</div>
+        <p class="gsec-body">Financial KPIs ensure operational sustainability. Review monthly and benchmark against the same period last year.</p>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Cost Per Patient Day</span><span class="gbench warn">Compare vs budget</span></div>
+            <div class="gkpi-formula">Total Operating Cost ÷ Total Inpatient Days</div>
+            <div class="gkpi-desc">Key indicator of operational efficiency. Rising Cost/Day without revenue increase signals overspend.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Claim Rejection Rate</span><span class="gbench good">Target &lt; 5%</span></div>
+            <div class="gkpi-formula">Rejected Claims ÷ Total Claims × 100</div>
+            <div class="gkpi-desc">High rejection rates indicate billing errors or documentation gaps. Each rejection is deferred or lost revenue.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Drug Cost %</span><span class="gbench good">Target &lt; 20%</span></div>
+            <div class="gkpi-formula">Drug Cost ÷ Total Operating Cost × 100</div>
+            <div class="gkpi-desc">Pharmacy is a major cost driver. High drug cost % may indicate overuse or non-generic prescribing patterns.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: REVENUE (NEW) -->
+      <div class="gsec" id="gs-revenue">
+        <div class="gsec-head">⑦ Revenue Performance KPIs <span class="new-tag">NEW</span></div>
+        <p class="gsec-body">These KPIs go beyond basic cost tracking to reveal revenue yield, operational profitability, payer mix sustainability, and departmental performance.</p>
+        <div class="gkpi-list">
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Avg Revenue per Occupied Bed (AROB)</span><span class="gbench warn">Higher = better</span></div>
+            <div class="gkpi-formula">Total Revenue ÷ Total Occupied Bed Days</div>
+            <div class="gkpi-desc">Measures revenue yield per bed-day — not just whether beds are full, but how much each occupied bed earns. Essential for pricing strategy.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">EBITDA Margin</span><span class="gbench good">Target 10–15%</span></div>
+            <div class="gkpi-formula">EBITDA ÷ Total Revenue × 100</div>
+            <div class="gkpi-desc">Operational profitability before financing and depreciation. The clearest single measure of whether the hospital covers its running costs.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Dept Contribution Margin</span><span class="gbench good">Target &gt; 25%</span></div>
+            <div class="gkpi-formula">(Dept Revenue − Direct Cost) ÷ Dept Revenue × 100</div>
+            <div class="gkpi-desc">Identifies which specialties drive profitability. Loss-making departments (&lt;0%) need immediate pricing or cost structure review.</div>
+          </div>
+          <div class="gkpi-item">
+            <div class="gkpi-top"><span class="gkpi-name">Revenue Mix Ratio</span><span class="gbench warn">Balanced mix = lower risk</span></div>
+            <div class="gkpi-formula">Each payer type ÷ Total Revenue × 100</div>
+            <div class="gkpi-desc">Breaks revenue into Private, Govt Scheme, and Insurance. High private mix = pricing control. High scheme = stable but low margin.</div>
+          </div>
+        </div>
+
+        <div class="gtip-box" style="border-color:var(--accent2);background:rgba(0,153,255,.07)">
+          <b>💡 Key Insight:</b> Compare <b>AROB vs Cost/Day</b>. If your revenue per occupied bed is lower than your cost per patient day, you are losing money on every inpatient — regardless of occupancy rate. Aim for AROB to be at least 15–20% above Cost/Day.
+        </div>
+      </div>
+
+      <!-- SECTION: BENCHMARKS -->
+      <div class="gsec" id="gs-benchmarks">
+        <div class="gsec-head">⑧ Benchmark Quick Reference</div>
+        <p class="gsec-body">Traffic-light thresholds for all KPIs at a glance.</p>
+        <div class="gbench-table-wrap">
+          <table class="gbench-table">
+            <thead>
+              <tr><th>KPI</th><th>🟢 On Target</th><th>🟡 Review</th><th>🔴 Critical</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>BOR</td><td>60–90%</td><td>&lt;60%</td><td>&gt;90%</td></tr>
+              <tr><td>ALOS</td><td>&lt;4 days</td><td>4–7 days</td><td>&gt;7 days</td></tr>
+              <tr><td>BTR</td><td>30–50 pts/bed</td><td>&lt;20</td><td>&gt;50</td></tr>
+              <tr><td>OPD Wait</td><td>&lt;30 min</td><td>30–60 min</td><td>&gt;60 min</td></tr>
+              <tr><td>OPD On-Time Rate</td><td>&gt;85%</td><td>70–85%</td><td>&lt;70%</td></tr>
+              <tr><td>Surg Cancel</td><td>&lt;5%</td><td>5–10%</td><td>&gt;10%</td></tr>
+              <tr><td>Mortality Rate</td><td>&lt;1%</td><td>1–3%</td><td>&gt;3%</td></tr>
+              <tr><td>Readmission Rate</td><td>&lt;5%</td><td>5–12%</td><td>&gt;12%</td></tr>
+              <tr><td>HAI Rate</td><td>&lt;1%</td><td>1–3%</td><td>&gt;3%</td></tr>
+              <tr><td>Patient Fall Rate</td><td>&lt;1/100 pts</td><td>1–3</td><td>&gt;3</td></tr>
+              <tr><td>Surg Complication</td><td>&lt;2%</td><td>2–5%</td><td>&gt;5%</td></tr>
+              <tr><td>P:N Ratio</td><td>&lt;4:1</td><td>4–6:1</td><td>&gt;6:1</td></tr>
+              <tr><td>D:P Ratio</td><td>&lt;10 pts/doc</td><td>10–20</td><td>&gt;20</td></tr>
+              <tr><td>Absence Rate</td><td>&lt;3%</td><td>3–6%</td><td>&gt;6%</td></tr>
+              <tr><td>Lab TAT</td><td>&gt;90%</td><td>85–90%</td><td>&lt;70%</td></tr>
+              <tr><td>Critical Notify</td><td>100%</td><td>95–99%</td><td>&lt;80%</td></tr>
+              <tr><td>Claim Rejection</td><td>&lt;5%</td><td>5–15%</td><td>&gt;15%</td></tr>
+              <tr><td>EBITDA Margin</td><td>&gt;10%</td><td>5–10%</td><td>&lt;5%</td></tr>
+              <tr><td>Drug Cost %</td><td>&lt;20%</td><td>20–30%</td><td>&gt;30%</td></tr>
+              <tr><td>Dept CM%</td><td>&gt;25%</td><td>10–25%</td><td>&lt;0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION: TIPS -->
+      <div class="gsec" id="gs-tips">
+        <div class="gsec-head">⑨ Tips &amp; Best Practices</div>
+        <div class="gtips-list">
+          <div class="gtip-item"><div class="gtip-num">01</div><div class="gtip-content"><b>Use Full Dashboard for monthly QA meetings</b><br>Enter all data before your monthly Quality or Board meeting. Print the PDF as a one-page handout for leadership.</div></div>
+          <div class="gtip-item"><div class="gtip-num">02</div><div class="gtip-content"><b>Use Quick Calc for ward-level spot checks</b><br>Ward managers can check P:N Ratio, OPD Wait, or BOR during morning rounds without filling the full form.</div></div>
+          <div class="gtip-item"><div class="gtip-num">03</div><div class="gtip-content"><b>Compare AROB vs Cost/Day for financial health</b><br>If AROB is lower than Cost/Day, you lose money on every occupied bed — regardless of how high occupancy is.</div></div>
+          <div class="gtip-item"><div class="gtip-num">04</div><div class="gtip-content"><b>Track trends, not just snapshots</b><br>One month has limited value. Keep a monthly log to identify improving or worsening patterns over time.</div></div>
+          <div class="gtip-item"><div class="gtip-num">05</div><div class="gtip-content"><b>Leave unknown fields blank — no mandatory fields</b><br>The app skips KPIs where data is missing. You never get an error. Just fill in what you have.</div></div>
+          <div class="gtip-item"><div class="gtip-num">06</div><div class="gtip-content"><b>Revenue Mix tells you about pricing power</b><br>High private mix = pricing flexibility. High scheme = stable but low margin. Balanced mix reduces concentration risk.</div></div>
+          <div class="gtip-item"><div class="gtip-num">07</div><div class="gtip-content"><b>Dept Contribution Margin identifies profit drivers</b><br>Not all departments are profitable. Use this to guide strategic decisions on pricing, cost, and resource allocation.</div></div>
+          <div class="gtip-item"><div class="gtip-num">08</div><div class="gtip-content"><b>Share freely — zero privacy risk</b><br>The app stores nothing. Share the URL with any colleague, clinic, or hospital with complete confidence.</div></div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="guide-footer">
+        Built with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored &nbsp;·&nbsp; Benchmarks based on WHO &amp; international standards
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
