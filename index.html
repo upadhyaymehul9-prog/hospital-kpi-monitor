@@ -1136,7 +1136,7 @@ window.onload=()=>{
             <div class="gcontact-body">
               <div class="gcontact-title">Contact for Custom KPI Tools &amp; Consulting</div>
               <div class="gcontact-desc">Are you a hospital, clinic, or healthcare group looking for more KPIs, custom dashboards, or tailored reporting tools? Get in touch — we can help build what you need.</div>
-              <a href="/cdn-cgi/l/email-protection#45303524212d3c243c6b28202d30297c052228242c296b262a28" class="gcontact-email-link"><span class="__cf_email__" data-cfemail="6b1e1b0a0f03120a1245060e031e07522b0c060a020745080406">[email&#160;protected]</span></a>
+              <a id="contactEmail" href="#" class="gcontact-email-link" onclick="this.href='mai'+'lto:upadhyay.mehul9'+'@gmail.com';return true;">upadhyay.mehul9@gmail.com</a>
               <div class="gcontact-tags">
                 <span class="gctag">Custom KPI Dashboards</span>
                 <span class="gctag">Hospital Analytics</span>
@@ -1160,5 +1160,20 @@ window.onload=()=>{
 
       <!-- FOOTER -->
       <div class="guide-footer">
-        Built with ❤️ by Dr Upadhyay for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored<br>
-        Benchmarks
+        Built with ❤️ for healthcare professionals &nbsp;·&nbsp; Free &amp; open source &nbsp;·&nbsp; No data stored<br>
+        Benchmarks based on WHO guidelines, NHS standards &amp; international healthcare quality frameworks<br>
+        <span id="footerEmail" style="color:var(--accent);font-size:10px;letter-spacing:1px;"></span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Render email via JS to prevent scraping/Cloudflare obfuscation
+document.getElementById('footerEmail').textContent = 'upadhyay.mehul9@gmail.com';
+document.getElementById('contactEmail').href = 'mailto:upadhyay.mehul9@gmail.com';
+document.getElementById('contactEmail').textContent = 'upadhyay.mehul9@gmail.com';
+</script>
+</body>
+</html>
